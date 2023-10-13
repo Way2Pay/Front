@@ -21,7 +21,7 @@ const RedirectWelome: NextPage = () => {
                       Connect Your Wallet To Get Started..
                     </p>
                     <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
-                      Let's Set You Up!
+                      Let&apos;s Set You Up!
                     </p>
                   </div>
 
