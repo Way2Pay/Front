@@ -1,6 +1,7 @@
 import { NextPage } from "next";
 import React, { useState } from "react";
-
+import { motion } from "framer-motion";
+import { slideRight, slideUp } from "../../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import ChainTable from "../../../components/chaintable";
@@ -23,35 +24,57 @@ const RedirectWelcome: NextPage = () => {
 
   return (
     <div>
-      <section className="relative flex items-center w-full bg-white">
-        <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl">
-          <div className="relative flex-col items-start m-auto align-middle">
+      <section className="relative flex items-center w-full bg-black">
+        <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
+          <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
               <div className="relative items-center gap-12 m-auto lg:inline-flex md:order-first">
                 <div className="max-w-xl text-center lg:text-left">
                   {address && !isDisconnected ? (
                     <>
-                      <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
-                        Your wallet is connected!
-                      </p>
-                      <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl mb-10 ">
-                        Welcome!
-                      </p>
+                      <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={slideRight}
+                      >
+                        <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl  ">
+                          Choose!
+                        </p>
+                        <p className=" mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                          select chain & coin for your transactions{" "}
+                        </p>
+                      </motion.div>
+
                       {!confirmedChain && (
-                        <ChainTable
-                          selectedChain={selectedChain}
-                          confirmedChain={confirmedChain}
-                          setSelectedChain={setSelectedChain}
-                          handleConfirmChain={handleConfirmChain}
-                        />
+                        <motion.div
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          variants={slideUp}
+                        >
+                          <ChainTable
+                            selectedChain={selectedChain}
+                            confirmedChain={confirmedChain}
+                            setSelectedChain={setSelectedChain}
+                            handleConfirmChain={handleConfirmChain}
+                          />
+                        </motion.div>
                       )}
                       {confirmedChain && (
-                        <CoinTable
-                          selectedCoin={selectedCoin}
-                          confirmedCoin={confirmedCoin}
-                          setSelectedCoin={setSelectedCoin}
-                          handleConfirmCoin={handleConfirmCoin}
-                        />
+                        <motion.div
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          variants={slideUp}
+                        >
+                          <CoinTable
+                            selectedCoin={selectedCoin}
+                            confirmedCoin={confirmedCoin}
+                            setSelectedCoin={setSelectedCoin}
+                            handleConfirmCoin={handleConfirmCoin}
+                          />
+                        </motion.div>
                       )}
                     </>
                   ) : (
@@ -81,7 +104,7 @@ const RedirectWelcome: NextPage = () => {
                   </div>
                 ) : null}
                 <img
-                  className="object-cover object-center w-full mx-auto bg-gray-300 lg:ml-auto "
+                  className="object-cover object-center w-full mx-auto bg-gray-300 lg:ml-auto mt-10 "
                   alt="hero"
                   src="../images/placeholders/square2.svg"
                 />
