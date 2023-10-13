@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { disconnect } from "@wagmi/core";
+
 import ChainTable from "../../../components/chaintable";
 import CoinTable from "../../../components/cointable";
 
@@ -15,6 +17,17 @@ const RedirectWelcome: NextPage = () => {
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
 
+  const disconnectWallet = () => {
+    disconnect();
+  };
+
+  const handleBackClick = () => {
+    if (confirmedChain && !confirmedCoin) {
+      setConfirmedChain(null);
+    } else if (!confirmedChain) {
+      disconnectWallet();
+    }
+  };
   const handleConfirmChain = () => {
     setConfirmedChain(selectedChain);
   };
@@ -28,6 +41,17 @@ const RedirectWelcome: NextPage = () => {
         <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
           <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl  ">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
+              {address && !isDisconnected && (
+                <div>
+                  <button
+                    onClick={handleBackClick}
+                    className="absolute top-5 left-5 px-4 py-2 bg-gray-300 text-white rounded"
+                  >
+                    Back
+                  </button>
+                </div>
+              )}
+
               <div className="relative items-center gap-12 m-auto lg:inline-flex md:order-first">
                 <div className="max-w-xl text-center lg:text-left">
                   {address && !isDisconnected ? (
