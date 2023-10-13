@@ -26,7 +26,7 @@ const RedirectWelcome: NextPage = () => {
     <div>
       <section className="relative flex items-center w-full bg-black">
         <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
-          <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl">
+          <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl  ">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
               <div className="relative items-center gap-12 m-auto lg:inline-flex md:order-first">
                 <div className="max-w-xl text-center lg:text-left">

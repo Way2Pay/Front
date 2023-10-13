@@ -3,7 +3,7 @@ import { Variants } from "framer-motion";
 const transition = {
   duration: 0.5,
   delay: 0.2,
-  ease: "easeInOut",
+  ease: "easeOut",
 };
 
 const spring = {
