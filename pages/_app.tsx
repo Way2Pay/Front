@@ -27,17 +27,14 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   ],
   [publicProvider()]
 );
-
-
-
 const { connectors } = getDefaultWallets({
   appName: "RainbowKit App",
-  projectId: "YOUR_PROJECT_ID",
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID?process.env.NEXT_PUBLIC_PROJECT_ID:"NoID",
   chains,
 });
 
 const wagmiConfig = createConfig({
-  autoConnect: false,
+  autoConnect: true,
   connectors,
   publicClient,
   webSocketPublicClient,

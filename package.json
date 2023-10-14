@@ -13,9 +13,13 @@
     "@connext/sdk": "^2.1.2",
     "@rainbow-me/rainbowkit": "^1.1.1",
     "framer": "^2.4.1",
+    "framer-motion": "^10.16.4",
+    "mongodb": "^3.5.9",
+    "mongoose": "^7.6.2",
     "next": "^13.4.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "siwe": "^2.1.4",
     "viem": "~1.12.2",
     "wagmi": "~1.4.2"
   },
