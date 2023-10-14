@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import React from "react";
+import dynamic from "next/dynamic";
 
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
@@ -18,10 +19,10 @@ const RedirectWelome: NextPage = () => {
                 <div className="max-w-xl text-center lg:text-left">
                   <div>
                     <p className="max-w-xl mt-4  font-thin tracking-tight text-gray-600 text-2xl">
-                      Connect Your Wallet To Get Started.
+                      Connect Your Wallet To Get Started..
                     </p>
                     <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
-                      Let's Set You Up!
+                      Let&apos;s Set You Up!
                     </p>
                   </div>
 
@@ -54,4 +55,4 @@ const RedirectWelome: NextPage = () => {
   );
 };
 
-export default RedirectWelome;
+export default dynamic(() => Promise.resolve(RedirectWelome), {ssr: false});
