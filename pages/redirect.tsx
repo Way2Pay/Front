@@ -1,6 +1,6 @@
 "use client";
 import { NextPage } from "next";
-import RedirectWelome from "./components/redirect/RedirectWelcome";
+import RedirectWelome from "../components/RedirectWelcome/RedirectWelcome";
 const Redirect: NextPage = () => {
   return (
     <>

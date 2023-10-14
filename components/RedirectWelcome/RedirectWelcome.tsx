@@ -3,13 +3,13 @@ import dynamic from "next/dynamic";
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { slideRight, slideUp } from "../../../context/motionpresets";
+import { slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { disconnect } from "@wagmi/core";
 
-import ChainTable from "../../../components/chaintable";
-import CoinTable from "../../../components/cointable";
+import ChainTable from "../chaintable";
+import CoinTable from "../cointable";
 
 const RedirectWelcome: NextPage = () => {
   const { openConnectModal } = useConnectModal();
