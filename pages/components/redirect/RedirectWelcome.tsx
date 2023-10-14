@@ -1,4 +1,6 @@
 import { NextPage } from "next";
+import dynamic from "next/dynamic";
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../../../context/motionpresets";
@@ -141,4 +143,4 @@ const RedirectWelcome: NextPage = () => {
   );
 };
 
-export default RedirectWelcome;
+export default dynamic(() => Promise.resolve(RedirectWelcome), {ssr: false});
