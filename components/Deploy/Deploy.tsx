@@ -1,18 +1,18 @@
 import { NextPage } from "next";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { slideRight, slideUp } from "../../../context/motionpresets";
+import { slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useWalletClient} from "wagmi";
 import { useConnect } from "wagmi";
 import { disconnect , getWalletClient} from "@wagmi/core";
-import {tokenAddresses, routerAddress} from "../../../context/chainTokenaddresses";
+import {tokenAddresses, routerAddress} from "../../context/chainTokenaddresses";
 import {MetaMaskConnector} from "wagmi/connectors/metaMask";
 import {ContractFactory} from 'ethers';
-import "../../../destabi.json";
+import "../../destabi.json";
 import { goerli } from "viem/chains";
 // import ChainTable from "../../../components/chaintable";
-import CoinTable from "../../../components/cointable";
+import CoinTable from "../cointable";
 
 // import { useState } from 'react';
 
