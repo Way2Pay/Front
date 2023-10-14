@@ -11,8 +11,6 @@ import {MetaMaskConnector} from "wagmi/connectors/metaMask";
 import {ContractFactory} from 'ethers';
 import "../../../destabi.json";
 import { goerli } from "viem/chains";
-
-
 // import ChainTable from "../../../components/chaintable";
 import CoinTable from "../../../components/cointable";
 
@@ -120,7 +118,7 @@ function DeployWelcome() {
                 <div>
                     <h2>Selected Chain: {selectedChain}</h2>
                     <h2>Selected Token: {selectedToken}</h2>
-                    <button onClick={connect}> Connect Wallet</button>
+                    <button onClick={()=>{connect}}> Connect Wallet</button>
                     <button onClick={deployContract}> Deploy</button>
                 </div>
             )}
