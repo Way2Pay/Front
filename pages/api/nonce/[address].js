@@ -14,23 +14,24 @@ export default async function handler(request, response) {
   var abc = db.collection("Users").find(myquery).toArray((err,res)=>{
     if(err)
     throw err;
-    console.log("Here",res);
+    
     if(!res.length)
     {
         db.collection("Users").insertOne({_id:address,address:address,nonce:nonce},(err,res)=>{
             if(err)throw err
-            else
-            console.log("Created",res)
+           
+            
         })
     }
     else{
         db.collection("Users").updateOne(myquery,newvalues,(err,res)=>{
             if (err) throw err
-            else
-            console.log("Updated",res)
+           
+           
         })
     }
   })
+  console.log("abc",abc)
   
   return response.status(200).json({ nonce: nonce });
 }

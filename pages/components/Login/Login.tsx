@@ -6,7 +6,8 @@ import { NextPage } from "next";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 
 const API_URL = "http://localhost:3000/api";
-const domain = "http://localhost:3000";
+const domain = "localhost";
+const origin = "https://localhost/login";
 
 const Login: NextPage = () => {
   const [messageSigned, setmessageSigned] = useState(false);
@@ -16,12 +17,13 @@ const Login: NextPage = () => {
   const nonce = generateNonce();
   console.log("HE", nonce);
   const createSiweMessage = async (
-    address: `0x${string}`,
+    address: string,
     statement: string
   ) => {
     const res = await fetch(`${API_URL}/nonce/`+address);
     console.log("res :>> ", res.body);
     console.log("origin :>> ", origin);
+    console.log("domain",domain)
     let temp = await res.json();
     console.log("HERE", temp);
     const message = new SiweMessage({
@@ -43,9 +45,22 @@ const Login: NextPage = () => {
     console.log("1");
 
     const message = await createSiweMessage(
-      address,
+      address.toString(),
       "Sign in with Ethereum to the app."
     );
+    console.log("Message",message)
+    const signature = await signMessageAsync({ message });
+    console.log("a", message);
+    console.log("b", signature);
+    const res = await fetch(`${API_URL}/verify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ address,message: message, signature: signature }),
+      credentials: "include",
+    });
+    console.log(res);
   };
   // useEffect(() => {
   // 	messageSigned && goToDashboard()
