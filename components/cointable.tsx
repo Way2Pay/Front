@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Coin, coins as defaultCoins } from "../context/coin";
-
+import { useAccount } from "wagmi";
 interface CoinTableProps {
   coins?: Coin[];
   selectedCoin: string | null;
@@ -16,6 +16,35 @@ const CoinTable: React.FC<CoinTableProps> = ({
   setSelectedCoin,
   handleConfirmCoin,
 }) => {
+  const [fetchedCoins, setFetchedCoins] = useState<Coin[]>(coins);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userAddress = "..."; // Provide the user's address here
+      const currentChainId = 1; // Provide the current chain's ID here (or fetch it if it's dynamic)
+
+      try {
+        const response = await fetch("/api/useCoins", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            address: userAddress,
+            chainId: currentChainId,
+          }),
+        });
+
+        const data = await response.json();
+        // Assuming the API returns an array of coins, update the state
+        setFetchedCoins(data);
+      } catch (error) {
+        console.error("Error fetching coin data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
