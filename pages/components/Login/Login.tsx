@@ -5,7 +5,6 @@ import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import { NextPage } from "next";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 
-const API_URL = "http://localhost:3000/api";
 const domain = "localhost";
 const origin = "https://localhost/login";
 
@@ -15,6 +14,14 @@ const Login: NextPage = () => {
   const { address, isConnected } = useAccount();
   const { data, signMessageAsync } = useSignMessage();
   const nonce = generateNonce();
+
+  const [domain,setDomain] = useState("");
+  const [origin,setOrigin] = useState("")
+  useEffect(()=>{
+    setDomain(window.location.host)
+    setOrigin(window.location.origin)
+  },[])
+  console.log("HEY",origin,domain);
   console.log("HE", nonce);
   const createSiweMessage = async (
     address: string,
@@ -52,7 +59,7 @@ const Login: NextPage = () => {
     const signature = await signMessageAsync({ message });
     console.log("a", message);
     console.log("b", signature);
-    const res = await fetch(`${API_URL}/verify`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
