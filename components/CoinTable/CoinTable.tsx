@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Coin, coins as defaultCoins } from "../context/coin";
+import { Coin, coins as defaultCoins } from "../../context/coin";
 import { useAccount } from "wagmi";
 interface CoinTableProps {
   coins?: Coin[];

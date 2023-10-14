@@ -1,13 +1,13 @@
 import { NextPage } from "next";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { slideDown, slideRight, slideUp } from "../../../context/motionpresets";
+import { slideDown, slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useNetwork } from "wagmi";
 import { disconnect } from "@wagmi/core";
 
-import ChainTable from "../../../components/chaintable";
-import CoinTable from "../../../components/cointable";
+import ChainTable from "../ChainTable/ChainTable";
+import CoinTable from "../CoinTable/CoinTable";
 
 const RedirectWelcome: NextPage = () => {
   const { chain } = useNetwork();
