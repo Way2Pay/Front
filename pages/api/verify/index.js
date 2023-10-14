@@ -1,6 +1,9 @@
 import { generateNonce, SiweMessage } from "siwe";
 import clientPromise from "../../../db/database";
 export default async function handler(request, response) {
+  if (request.method === 'OPTIONS') {
+    return response.status(200).json(({ body: "OK" }))
+  }
   const client = await clientPromise;
   const db = client.db("PayDB");
   switch (request.method) {
