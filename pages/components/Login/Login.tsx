@@ -20,7 +20,7 @@ const Login: NextPage = () => {
     address: string,
     statement: string
   ) => {
-    const res = await fetch(`${API_URL}/nonce/`+address);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/nonce/`+address);
     console.log("res :>> ", res.body);
     console.log("origin :>> ", origin);
     console.log("domain",domain)
