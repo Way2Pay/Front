@@ -1,7 +1,8 @@
 export interface Coin {
   name: string;
   symbol: string;
-  price: string; // You can use a number type if you want to perform calculations on this
+  price?: string;
+  balance?: string;
 }
 
 export const coins: Coin[] = [

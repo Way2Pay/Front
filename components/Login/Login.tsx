@@ -5,9 +5,6 @@ import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import { NextPage } from "next";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 
-const domain = "localhost";
-const origin = "https://localhost/login";
-
 const Login: NextPage = () => {
   const [messageSigned, setmessageSigned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -15,22 +12,21 @@ const Login: NextPage = () => {
   const { data, signMessageAsync } = useSignMessage();
   const nonce = generateNonce();
 
-  const [domain,setDomain] = useState("");
-  const [origin,setOrigin] = useState("")
-  useEffect(()=>{
-    setDomain(window.location.host)
-    setOrigin(window.location.origin)
-  },[])
-  console.log("HEY",origin,domain);
+  const [domain, setDomain] = useState("");
+  const [origin, setOrigin] = useState("");
+  useEffect(() => {
+    setDomain(window.location.host);
+    setOrigin(window.location.origin);
+  }, []);
+  console.log("HEY", origin, domain);
   console.log("HE", nonce);
-  const createSiweMessage = async (
-    address: string,
-    statement: string
-  ) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/nonce/`+address);
+  const createSiweMessage = async (address: string, statement: string) => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/nonce/` + address
+    );
     console.log("res :>> ", res.body);
     console.log("origin :>> ", origin);
-    console.log("domain",domain)
+    console.log("domain", domain);
     let temp = await res.json();
     console.log("HERE", temp);
     const message = new SiweMessage({
@@ -55,7 +51,7 @@ const Login: NextPage = () => {
       address.toString(),
       "Sign in with Ethereum to the app."
     );
-    console.log("Message",message)
+    console.log("Message", message);
     const signature = await signMessageAsync({ message });
     console.log("a", message);
     console.log("b", signature);
@@ -64,7 +60,7 @@ const Login: NextPage = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ address,message: message, signature: signature }),
+      body: JSON.stringify({ address, message: message, signature: signature }),
       credentials: "include",
     });
     console.log(res);

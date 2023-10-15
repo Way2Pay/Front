@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
@@ -13,6 +13,7 @@ import CoinTable from "../CoinTable/CoinTable";
 
 const RedirectWelcome: NextPage = () => {
   const { chain } = useNetwork();
+  const [fetchedTokens, setFetchedTokens] = useState([]);
 
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
@@ -20,6 +21,28 @@ const RedirectWelcome: NextPage = () => {
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (address) {
+      fetch("/api/userDetails/getTokensForAddress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: address,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setFetchedTokens(data);
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("There was an error fetching token balances:", error);
+        });
+    }
+  }, [address]);
 
   const disconnectWallet = () => {
     disconnect();
@@ -97,6 +120,7 @@ const RedirectWelcome: NextPage = () => {
                           variants={slideUp}
                         >
                           <CoinTable
+                            coins={fetchedTokens}
                             selectedCoin={selectedCoin}
                             confirmedCoin={confirmedCoin}
                             setSelectedCoin={setSelectedCoin}
@@ -159,4 +183,4 @@ const RedirectWelcome: NextPage = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(RedirectWelcome), {ssr: false});
+export default dynamic(() => Promise.resolve(RedirectWelcome), { ssr: false });
