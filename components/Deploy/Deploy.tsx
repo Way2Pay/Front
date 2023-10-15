@@ -109,7 +109,8 @@ function DeployWelcome() {
     
     console.log(client);
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
-    const a = await client?.deployContract({
+    try{ 
+      const a = await client?.deployContract({
       abi: abiData["abi"],
       account: address,
       bytecode: abiData["bytecode"] as `0x${string}`,
@@ -118,7 +119,10 @@ function DeployWelcome() {
         "0xE592427A0AEce92De3Edee1F18E0157C05861564",
       ],
     });
-    console.log(a);
+    console.log(a)
+  } catch (err:unknown){
+   
+  }
   }
   const { heading, subheading } = getHeadingText();
 
