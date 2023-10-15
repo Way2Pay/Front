@@ -1,10 +1,10 @@
 import React from "react";
-import { Coin, coins as defaultCoins } from "../context/coin";
+import { Coin, coins as defaultCoins } from "../../context/coin";
 
 interface CoinTableProps {
   coins?: Coin[];
   selectedCoin: string | null;
-  confirmedCoin: string | null; // Add this line
+  confirmedCoin: string | null;
   setSelectedCoin: (coin: string | null) => void;
   handleConfirmCoin: () => void;
 }
@@ -29,22 +29,22 @@ const CoinTable: React.FC<CoinTableProps> = ({
                 Symbol
               </th>
               <th scope="col" className="px-6 py-3">
-                Price
+                Balance
               </th>
             </tr>
           </thead>
           <tbody>
-            {coins.map((coin) => (
+            {coins.map((token) => (
               <tr
-                key={coin.name}
+                key={token.name}
                 className={`border-b ${
-                  selectedCoin === coin.name ? "bg-blue-100" : "bg-white"
+                  selectedCoin === token.name ? "bg-blue-100" : "bg-white"
                 }`}
-                onClick={() => setSelectedCoin(coin.name)}
+                onClick={() => setSelectedCoin(token.name)}
               >
-                <td className="px-6 py-4">{coin.name}</td>
-                <td className="px-6 py-4">{coin.symbol}</td>
-                <td className="px-6 py-4">{coin.price}</td>
+                <td className="px-6 py-4">{token.name}</td>
+                <td className="px-6 py-4">{token.symbol}</td>
+                <td className="px-6 py-4">{token.balance}</td>
               </tr>
             ))}
           </tbody>

@@ -12,6 +12,7 @@
     "@connext/chain-abstraction": "^1.0.4",
     "@connext/sdk": "^2.1.2",
     "@rainbow-me/rainbowkit": "^1.1.1",
+    "alchemy-sdk": "^2.10.1",
     "framer": "^2.4.1",
     "framer-motion": "^10.16.4",
     "mongodb": "^3.5.9",

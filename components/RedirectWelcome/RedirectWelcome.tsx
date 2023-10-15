@@ -1,23 +1,48 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { disconnect } from "@wagmi/core";
 
-import ChainTable from "../chaintable";
-import CoinTable from "../cointable";
+import ChainTable from "../ChainTable/ChainTable";
+import CoinTable from "../CoinTable/CoinTable";
 
 const RedirectWelcome: NextPage = () => {
+  const { chain } = useNetwork();
+  const [fetchedTokens, setFetchedTokens] = useState([]);
+
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (address) {
+      fetch("/api/userDetails/getTokensForAddress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: address,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setFetchedTokens(data);
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("There was an error fetching token balances:", error);
+        });
+    }
+  }, [address]);
 
   const disconnectWallet = () => {
     disconnect();
@@ -95,6 +120,7 @@ const RedirectWelcome: NextPage = () => {
                           variants={slideUp}
                         >
                           <CoinTable
+                            coins={fetchedTokens}
                             selectedCoin={selectedCoin}
                             confirmedCoin={confirmedCoin}
                             setSelectedCoin={setSelectedCoin}
@@ -105,20 +131,34 @@ const RedirectWelcome: NextPage = () => {
                     </>
                   ) : (
                     <>
-                      <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
-                        Connect Your Wallet To Get Started..
-                      </p>
-                      <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
-                        Let&apos;s Set You Up!
-                      </p>
-                      <div className="flex items-center space-x-6 mt-10 w-full ">
-                        <button
-                          onClick={openConnectModal}
-                          className="px-10 w-full max-w-xs border-2 bg-slate-200 rounded-lg p-2"
-                        >
-                          Connect Wallet
-                        </button>
-                      </div>
+                      <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={slideRight}
+                      >
+                        <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
+                          Connect Your Wallet To Get Started..
+                        </p>
+                        <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
+                          Let&apos;s Set You Up!
+                        </p>
+                      </motion.div>
+                      <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={slideUp}
+                      >
+                        <div className="flex items-center space-x-6 mt-10 w-full ">
+                          <button
+                            onClick={openConnectModal}
+                            className="px-10 w-full max-w-xs border-2 bg-slate-200 rounded-lg p-2"
+                          >
+                            Connect Wallet
+                          </button>
+                        </div>
+                      </motion.div>
                     </>
                   )}
                 </div>
@@ -143,4 +183,4 @@ const RedirectWelcome: NextPage = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(RedirectWelcome), {ssr: false});
+export default dynamic(() => Promise.resolve(RedirectWelcome), { ssr: false });
