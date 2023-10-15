@@ -11,7 +11,7 @@ export default async function handler(request, response){
           
           const {address, chainId, contractAddr} = request.body;
           console.log(address, chainId, contractAddr);
-          var myquery = { address:address, chains:{id:chainId}};
+          var myquery = { address:address};
           var newvalues = { $set: { chains: [{id: chainId, contractAddr: contractAddr}] } };
 
           var abc = db

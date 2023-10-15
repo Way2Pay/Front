@@ -14,9 +14,7 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { ContractFactory } from "ethers";
 import "../../destabi.json";
 import { goerli } from "viem/chains";
-// import ChainTable from "../../../components/chaintable";
-import CoinTable from "../CoinTable/CoinTable";
-// import { useState } from 'react';
+
 
 function ChainTable({
   onChainSelect,
@@ -131,7 +129,7 @@ function DeployWelcome() {
       ],
     });
     console.log(a);
-    
+
   }
 
   return (
