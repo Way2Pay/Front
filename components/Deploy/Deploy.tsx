@@ -21,6 +21,7 @@ import CoinTable from "../CoinTable/CoinTableUser";
 function DeployWelcome() {
   const { switchNetwork } = useSwitchNetwork();
 
+  
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
@@ -84,6 +85,7 @@ function DeployWelcome() {
     }
 
     // Switch to the selected chain
+    setChainId(selectedChainId)
     switchNetwork(selectedChainId);
   };
 
@@ -91,15 +93,10 @@ function DeployWelcome() {
     setConfirmedCoin(selectedCoin);
   };
   const {
-    data: walletClient,
+    data: client,
     isError,
     isLoading,
   } = useWalletClient({ chainId: chainId });
-  const { connect } = useConnect({
-    connector: new MetaMaskConnector(),
-
-    chainId: 5,
-  });
   const fetchedTokens = [
     { name: "Ethereum", price: "2000" },
     { name: "Bitcoin", price: "40000" },
@@ -109,7 +106,7 @@ function DeployWelcome() {
 
   async function deployContract() {
     let abiData = require("../../destabi.json");
-    const client = await getWalletClient({ chainId: 5 });
+    
     console.log(client);
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
     const a = await client?.deployContract({
