@@ -1,10 +1,8 @@
 import { NextPage } from "next";
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { slideRight, slideUp } from "../../context/motionpresets";
+
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useWalletClient } from "wagmi";
-import { useConnect } from "wagmi";
 import { disconnect, getWalletClient } from "@wagmi/core";
 import dynamic from "next/dynamic";
 import { useSwitchNetwork } from "wagmi";
@@ -257,6 +255,7 @@ function DeployWelcome() {
               </div>
             </div>
           </div>
+
         </div>
       </section>
     </div>
