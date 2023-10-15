@@ -4,7 +4,7 @@ export interface Chain {
 }
 
 export const chains: Chain[] = [
-  { name: "Ethereum", gasPrice: "100 Gwei" },
-  { name: "Optimism", gasPrice: "10 Gwei" },
+  { name: "MATIC_MUMBAI", gasPrice: "100 Gwei" },
+  { name: "ETH_GOERLI", gasPrice: "10 Gwei" },
   { name: "Scroll", gasPrice: "1 Gwei" },
 ];

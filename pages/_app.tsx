@@ -12,6 +12,7 @@ import {
   polygon,
   base,
   zora,
+  polygonMumbai,
 } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
@@ -23,13 +24,17 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     arbitrum,
     base,
     zora,
+    goerli,
+    polygonMumbai,
     ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [goerli] : []),
   ],
   [publicProvider()]
 );
 const { connectors } = getDefaultWallets({
   appName: "RainbowKit App",
-  projectId: process.env.NEXT_PUBLIC_PROJECT_ID?process.env.NEXT_PUBLIC_PROJECT_ID:"NoID",
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID
+    ? process.env.NEXT_PUBLIC_PROJECT_ID
+    : "NoID",
   chains,
 });
 

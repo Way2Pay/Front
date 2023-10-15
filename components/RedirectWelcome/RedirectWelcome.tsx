@@ -1,19 +1,18 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
-
+import { Coin } from "../../context/coin";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { disconnect } from "@wagmi/core";
 
-import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTable";
 
 const RedirectWelcome: NextPage = () => {
   const { chain } = useNetwork();
-  const [fetchedTokens, setFetchedTokens] = useState([]);
+  const [fetchedTokens, setFetchedTokens] = useState<Coin[]>([]);
 
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
@@ -21,6 +20,7 @@ const RedirectWelcome: NextPage = () => {
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
+  const { switchNetwork } = useSwitchNetwork();
 
   useEffect(() => {
     if (address) {
@@ -55,11 +55,42 @@ const RedirectWelcome: NextPage = () => {
       disconnectWallet();
     }
   };
-  const handleConfirmChain = () => {
-    setConfirmedChain(selectedChain);
-  };
+
   const handleConfirmCoin = () => {
+    if (!selectedCoin) return;
+
     setConfirmedCoin(selectedCoin);
+
+    // Find the selected token object based on the coin name
+    const selectedToken: Coin | undefined = fetchedTokens.find(
+      (token: Coin) => token.name === selectedCoin
+    );
+
+    // Extract the chain name from the selected token object
+    const selectedTokenChainName = selectedToken?.chain;
+
+    if (!selectedTokenChainName || !switchNetwork) {
+      console.error("Chain name not found or switchNetwork not available");
+      return;
+    }
+
+    // Mapping from chain names to their respective chain IDs
+    const chainNameToIdMap: { [key: string]: number } = {
+      MATIC_MUMBAI: 80001,
+      ETH_GOERLI: 5,
+      // ... add other chains as necessary
+    };
+
+    // Get the chain ID based on the chain name
+    const selectedTokenChainId = chainNameToIdMap[selectedTokenChainName];
+
+    if (!selectedTokenChainId) {
+      console.error("Chain ID not found for name:", selectedTokenChainName);
+      return;
+    }
+
+    // Switch to the selected chain
+    switchNetwork(selectedTokenChainId);
   };
 
   return (
@@ -93,41 +124,24 @@ const RedirectWelcome: NextPage = () => {
                           Choose!
                         </p>
                         <p className=" mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
-                          select chain & coin for your transactions{" "}
+                          select coin for your transactions{" "}
                         </p>
                       </motion.div>
 
-                      {!confirmedChain && (
-                        <motion.div
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          variants={slideUp}
-                        >
-                          <ChainTable
-                            selectedChain={selectedChain}
-                            confirmedChain={confirmedChain}
-                            setSelectedChain={setSelectedChain}
-                            handleConfirmChain={handleConfirmChain}
-                          />
-                        </motion.div>
-                      )}
-                      {confirmedChain && (
-                        <motion.div
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          variants={slideUp}
-                        >
-                          <CoinTable
-                            coins={fetchedTokens}
-                            selectedCoin={selectedCoin}
-                            confirmedCoin={confirmedCoin}
-                            setSelectedCoin={setSelectedCoin}
-                            handleConfirmCoin={handleConfirmCoin}
-                          />
-                        </motion.div>
-                      )}
+                      <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={slideUp}
+                      >
+                        <CoinTable
+                          coins={fetchedTokens}
+                          selectedCoin={selectedCoin}
+                          confirmedCoin={confirmedCoin}
+                          setSelectedCoin={setSelectedCoin}
+                          handleConfirmCoin={handleConfirmCoin}
+                        />
+                      </motion.div>
                     </>
                   ) : (
                     <>
