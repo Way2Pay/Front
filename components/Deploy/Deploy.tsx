@@ -13,7 +13,9 @@ import {
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { ContractFactory } from "ethers";
 import "../../destabi.json";
-import { goerli } from "viem/chains";
+import { motion } from "framer-motion";
+import { slideRight, slideUp } from "../../context/motionpresets";
+import { useConnect } from "wagmi";
 import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTableUser";
 function DeployWelcome() {
