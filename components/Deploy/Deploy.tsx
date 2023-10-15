@@ -1,10 +1,8 @@
 import { NextPage } from "next";
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { slideRight, slideUp } from "../../context/motionpresets";
+
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useWalletClient } from "wagmi";
-import { useConnect } from "wagmi";
 import { disconnect, getWalletClient } from "@wagmi/core";
 import {
   tokenAddresses,
@@ -103,11 +101,6 @@ function DeployWelcome() {
     isError,
     isLoading,
   } = useWalletClient({ chainId: chainId });
-  const { connect } = useConnect({
-    connector: new MetaMaskConnector(),
-
-    chainId: 5,
-  });
   const handleChainSelect = (chain: string) => {
     setSelectedChain(chain);
   };
@@ -146,14 +139,7 @@ function DeployWelcome() {
         <div>
           <h2>Selected Chain: {selectedChain}</h2>
           <h2>Selected Token: {selectedToken}</h2>
-          <button
-            onClick={() => {
-              connect;
-            }}
-          >
-            {" "}
-            Connect Wallet
-          </button>
+          <ConnectButton/>
           <button onClick={deployContract}> Deploy</button>
         </div>
       )}
