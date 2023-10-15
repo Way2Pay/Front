@@ -19,9 +19,10 @@ export default async function handler(request, response) {
 
       if (!res.length) {
         db.collection("Users").insertOne(
-          { _id: address, address: address, nonce: nonce },
+          { address: address, nonce: nonce },
           (err, res) => {
             if (err) throw err;
+            console.log("Inserted",res.insertedId)
           }
         );
       } else {
