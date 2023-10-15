@@ -6,6 +6,8 @@ import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useWalletClient } from "wagmi";
 import { useConnect } from "wagmi";
 import { disconnect, getWalletClient } from "@wagmi/core";
+import dynamic from "next/dynamic";
+
 import {
   tokenAddresses,
   routerAddress,
@@ -14,90 +16,60 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { ContractFactory } from "ethers";
 import "../../destabi.json";
 import { goerli } from "viem/chains";
-// import ChainTable from "../../../components/chaintable";
-import CoinTable from "../CoinTable/CoinTable";
-// import { useState } from 'react';
-
-function ChainTable({
-  onChainSelect,
-}: {
-  onChainSelect: (chain: string) => void;
-}) {
-  const chains: string[] = [
-    "Ethereum",
-    "Binance Smart Chain",
-    "Polygon",
-    "Solana",
-  ]; // Add more chains as needed
-
-  return (
-    <div>
-      <h2>Select a Chain:</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Chain</th>
-          </tr>
-        </thead>
-        <tbody>
-          {chains.map((chain) => (
-            <tr key={chain}>
-              <td>
-                <button onClick={() => onChainSelect(chain)}>{chain}</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function TokenTable({
-  selectedChain,
-  onTokenSelect,
-}: {
-  selectedChain: string;
-  onTokenSelect: (token: string) => void;
-}) {
-  // Define tokens for each chain
-  const tokens: Record<string, string[]> = {
-    Ethereum: ["Token1", "Token2", "Token3"],
-    "Binance Smart Chain": ["BEP-20 Token1", "BEP-20 Token2"],
-    Polygon: ["Matic Token1", "Matic Token2"],
-    Solana: ["SPL Token1", "SPL Token2"],
-  };
-
-  return (
-    <div>
-      <h2>Select a Token for {selectedChain}:</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Token</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tokens[selectedChain].map((token) => (
-            <tr key={token}>
-              <td>
-                <button onClick={() => onTokenSelect(token)}>{token}</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
+import ChainTable from "../ChainTable/ChainTable";
+import CoinTable from "../CoinTable/CoinTableUser";
 function DeployWelcome() {
-  const [selectedChain, setSelectedChain] = useState<string>("");
-  const [selectedToken, setSelectedToken] = useState<string>("");
+  const [selectedChain, setSelectedChain] = useState<string | null>(null);
+  const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
+  const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
+  const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
   // const { address, isConnecting, isDisconnected } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [chainId, setChainId] = useState(5);
   const { address, isConnecting, isDisconnected } = useAccount();
+  const disconnectWallet = () => {
+    disconnect();
+  };
+
+  function getHeadingText() {
+    if (!address || isDisconnected) {
+      return {
+        heading: "Let's Set You Up!",
+        subheading: "Connect Your Wallet To Get Started..",
+      };
+    } else if (!confirmedChain) {
+      return {
+        heading: "Choose!",
+        subheading: "Select a chain for receiving payments.",
+      };
+    } else if (confirmedChain && !confirmedCoin) {
+      return {
+        heading: "Almost There!",
+        subheading: "Now, select a coin for receiving payments.",
+      };
+    } else {
+      return {
+        heading: "Ready to Go!",
+        subheading: "Deploy to confirm your selections.",
+      };
+    }
+  }
+  const handleBackClick = () => {
+    if (confirmedChain && confirmedCoin) {
+      setConfirmedCoin(null);
+    } else if (confirmedChain && !confirmedCoin) {
+      setConfirmedChain(null);
+    } else if (!confirmedChain) {
+      disconnectWallet();
+    }
+  };
+
+  const handleConfirmChain = () => {
+    setConfirmedChain(selectedChain);
+  };
+  const handleConfirmCoin = () => {
+    setConfirmedCoin(selectedCoin);
+  };
   const {
     data: walletClient,
     isError,
@@ -108,13 +80,12 @@ function DeployWelcome() {
 
     chainId: 5,
   });
-  const handleChainSelect = (chain: string) => {
-    setSelectedChain(chain);
-  };
-
-  const handleTokenSelect = (token: string) => {
-    setSelectedToken(token);
-  };
+  const fetchedTokens = [
+    { name: "Ethereum", price: "2000" },
+    { name: "Bitcoin", price: "40000" },
+    { name: "Cardano", price: "1.5" },
+    // ... add more tokens as needed
+  ];
 
   async function deployContract() {
     let abiData = require("../../destabi.json");
@@ -132,33 +103,144 @@ function DeployWelcome() {
     });
     console.log(a);
   }
+  const { heading, subheading } = getHeadingText();
 
   return (
     <div>
-      {!selectedChain ? (
-        <ChainTable onChainSelect={handleChainSelect} />
-      ) : !selectedToken ? (
-        <TokenTable
-          selectedChain={selectedChain}
-          onTokenSelect={handleTokenSelect}
-        />
-      ) : (
-        <div>
-          <h2>Selected Chain: {selectedChain}</h2>
-          <h2>Selected Token: {selectedToken}</h2>
-          <button
-            onClick={() => {
-              connect;
-            }}
-          >
-            {" "}
-            Connect Wallet
-          </button>
-          <button onClick={deployContract}> Deploy</button>
+      <section className="relative flex items-center w-full bg-black">
+        <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
+          <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl  ">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
+              {address && !isDisconnected && (
+                <div>
+                  <button
+                    onClick={handleBackClick}
+                    className="absolute top-5 left-5 px-4 py-2 bg-gray-300 text-white rounded"
+                  >
+                    Back
+                  </button>
+                </div>
+              )}
+
+              <div className="relative items-center gap-12 m-auto lg:inline-flex md:order-first">
+                <div className="max-w-xl text-center lg:text-left">
+                  {address && !isDisconnected ? (
+                    <>
+                      <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={slideRight}
+                      >
+                        <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl">
+                          {heading}
+                        </p>
+                        <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                          {subheading}
+                        </p>
+                      </motion.div>
+
+                      {!confirmedChain && (
+                        <motion.div
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          variants={slideUp}
+                        >
+                          <ChainTable
+                            selectedChain={selectedChain}
+                            confirmedChain={confirmedChain}
+                            setSelectedChain={setSelectedChain}
+                            handleConfirmChain={handleConfirmChain}
+                          />
+                        </motion.div>
+                      )}
+                      {confirmedChain && !confirmedCoin && (
+                        <motion.div
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          variants={slideUp}
+                        >
+                          <CoinTable
+                            coins={fetchedTokens}
+                            selectedCoin={selectedCoin}
+                            confirmedCoin={confirmedCoin}
+                            setSelectedCoin={setSelectedCoin}
+                            handleConfirmCoin={handleConfirmCoin}
+                          />
+                        </motion.div>
+                      )}
+                      {confirmedChain && confirmedCoin && (
+                        <motion.div
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          variants={slideUp}
+                        >
+                          <div className="flex items-center space-x-6 mt-10 w-full">
+                            <button
+                              onClick={deployContract}
+                              className="px-10 w-full max-w-xs border-2 bg-slate-200 rounded-lg p-2 hover:bg-slate-300"
+                            >
+                              Deploy
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={slideRight}
+                      >
+                        <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
+                          Connect Your Wallet To Get Started..
+                        </p>
+                        <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
+                          Let&apos;s Set You Up!
+                        </p>
+                      </motion.div>
+                      <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={slideUp}
+                      >
+                        <div className="flex items-center space-x-6 mt-10 w-full ">
+                          <button
+                            onClick={openConnectModal}
+                            className="px-10 w-full max-w-xs border-2 bg-slate-200 rounded-lg p-2"
+                          >
+                            Connect Wallet
+                          </button>
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="order-first block w-full mt-12 aspect-square lg:mt-0">
+                {address && !isDisconnected ? (
+                  <div className=" w-full">
+                    <ConnectButton />
+                  </div>
+                ) : null}
+                <img
+                  className="object-cover object-center w-full mx-auto bg-gray-300 lg:ml-auto mt-10 "
+                  alt="hero"
+                  src="../images/placeholders/square2.svg"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
     </div>
   );
 }
 
-export default DeployWelcome;
+export default dynamic(() => Promise.resolve(DeployWelcome), { ssr: false });
