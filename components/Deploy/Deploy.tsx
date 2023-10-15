@@ -3,19 +3,17 @@ import React, { useState } from "react";
 
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useWalletClient } from "wagmi";
-import { disconnect, getWalletClient } from "@wagmi/core";
+import { disconnect } from "@wagmi/core";
 import dynamic from "next/dynamic";
 import { useSwitchNetwork } from "wagmi";
 import {
   tokenAddresses,
   routerAddress,
 } from "../../context/chainTokenaddresses";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { ContractFactory } from "ethers";
 import "../../destabi.json";
 import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../../context/motionpresets";
-import { useConnect } from "wagmi";
 import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTableUser";
 function DeployWelcome() {
@@ -26,9 +24,8 @@ function DeployWelcome() {
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
-  // const { address, isConnecting, isDisconnected } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const [chainId, setChainId] = useState(5);
+  const [chainId, setChainId] = useState(1);
   const { address, isConnecting, isDisconnected } = useAccount();
   const disconnectWallet = () => {
     disconnect();
@@ -67,15 +64,18 @@ function DeployWelcome() {
     }
   };
 
+  const chainNameToIdMap: { [key: string]: number } = {
+    MATIC_MUMBAI: 80001,
+    ETH_GOERLI: 5,
+    // ... add other chains as necessary
+  };
+
   const handleConfirmChain = () => {
+    setChainId(chainNameToIdMap[selectedChain || ""])
     setConfirmedChain(selectedChain);
 
     // Mapping from chain names to their respective chain IDs
-    const chainNameToIdMap: { [key: string]: number } = {
-      MATIC_MUMBAI: 80001,
-      ETH_GOERLI: 5,
-      // ... add other chains as necessary
-    };
+
 
     const selectedChainId = chainNameToIdMap[selectedChain || ""];
 
