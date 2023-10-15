@@ -7,7 +7,7 @@ import { useAccount, useWalletClient } from "wagmi";
 import { useConnect } from "wagmi";
 import { disconnect, getWalletClient } from "@wagmi/core";
 import dynamic from "next/dynamic";
-
+import { useSwitchNetwork } from "wagmi";
 import {
   tokenAddresses,
   routerAddress,
@@ -19,6 +19,8 @@ import { goerli } from "viem/chains";
 import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTableUser";
 function DeployWelcome() {
+  const { switchNetwork } = useSwitchNetwork();
+
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
@@ -66,7 +68,25 @@ function DeployWelcome() {
 
   const handleConfirmChain = () => {
     setConfirmedChain(selectedChain);
+
+    // Mapping from chain names to their respective chain IDs
+    const chainNameToIdMap: { [key: string]: number } = {
+      MATIC_MUMBAI: 80001,
+      ETH_GOERLI: 5,
+      // ... add other chains as necessary
+    };
+
+    const selectedChainId = chainNameToIdMap[selectedChain || ""];
+
+    if (!selectedChainId || !switchNetwork) {
+      console.error("Chain ID not found or switchNetwork not available");
+      return;
+    }
+
+    // Switch to the selected chain
+    switchNetwork(selectedChainId);
   };
+
   const handleConfirmCoin = () => {
     setConfirmedCoin(selectedCoin);
   };

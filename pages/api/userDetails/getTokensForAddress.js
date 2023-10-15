@@ -37,8 +37,6 @@ const desiredTokensByChain = {
 };
 
 async function fetchTokensForChain(config, address) {
-  console.log(`Fetching tokens for chain: ${config.name}`);
-
   const alchemy = new Alchemy(config);
 
   // Extract the contract addresses for the current chain
