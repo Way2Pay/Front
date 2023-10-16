@@ -6,9 +6,10 @@ import { SiweMessage, generateNonce } from "siwe";
 import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import { NextPage } from "next";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-
+import { useRouter } from "next/navigation";
 const Login: NextPage = () => {
 
+  const router = useRouter();
   const [auth,setAuth] = useRecoilState(authState)
   const [messageSigned, setmessageSigned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,6 +60,7 @@ const Login: NextPage = () => {
       "Sign in with Ethereum to the app."
     );
     console.log("Message", message);
+    try{
     const signature = await signMessageAsync({ message });
     console.log("a", message);
     console.log("b", signature);
@@ -76,6 +78,12 @@ const Login: NextPage = () => {
     console.log("updating accesstoken")
     localStorage.setItem('accessToken',data.token)
     setAuth({...auth,accessToken:data.token})
+    router.push("/dashboard")
+    }
+    catch(err){
+      console.log("User signature denied")
+    }
+    
   };
   // useEffect(() => {
   // 	messageSigned && goToDashboard()
