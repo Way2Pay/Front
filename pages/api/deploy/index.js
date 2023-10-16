@@ -17,20 +17,20 @@ export default async function handler(request, response) {
   const { _id: userId, address = address } = validity.payload;
 
   if (request.method === "GET") {
-    const { chainId, coin,contractAddress } = request.body;
-    db.collection("Users")
-      .find({ address: address })
+    db.collection("Deployements")
+      .find({ owner: address })
       .toArray((err, res) => {
         if (err) throw err;
         console.log("TX", res);
-        return response.status(200).json({ transactions: res });
+        return response.status(200).json({ deployements: res });
       });
   } else if (request.method === "POST") {
+    const { chainId, coinAddress,contractAddress } = request.body;
    await db.collection("Users")
       .find({ _id: userId })
       .toArray(async (err, res) => {
         if (err) throw err;
-        await db.collections("Deployements").insertOne({ owner:address,chainId:chainId,coin:address,contract:contractAddress },async(err,res)=>{
+        await db.collections("Deployements").insertOne({ owner:address,chainId:chainId,coin:coinAddress,contract:contractAddress },async(err,res)=>{
             if(err)throw err
 
             const id=res.insertedId
