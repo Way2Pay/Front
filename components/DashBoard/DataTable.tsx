@@ -120,7 +120,7 @@ const DataTable: React.FC<DataTableProps> = ({
                   </table>
                 ) : (
                   <p className="text-center p-4">
-                    You don't have any deployments.
+                    You don&apos;t have any deployments.
                   </p>
                 )}
               </div>
