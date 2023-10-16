@@ -1,4 +1,5 @@
 import { generateNonce, SiweMessage } from "siwe";
+import { getToken } from "../../../backend-services/auth";
 import clientPromise from "../../../db/database";
 export default async function handler(request, response) {
   if (request.method === "OPTIONS") {
@@ -26,13 +27,17 @@ export default async function handler(request, response) {
           }
         });
 
-      const { data: result, success } = await SIWEObject.verify({
+      const fields = await SIWEObject.verify({
         signature: signature,
         nonce: nonce,
       });
-      console.log("data", result);
-      console.log("success", success);
-      response.status(200).json(result);
+
+      
+      console.log("data", fields);
+      const token = getToken(fields);
+      console.log("success", fields.success);
+      console.log("NONCE",fields.data.nonce)
+      response.status(200).json({data:fields,token:token});
       break;
     case "GET":
       response.status(200).json({

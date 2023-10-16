@@ -15,11 +15,13 @@
     "alchemy-sdk": "^2.10.1",
     "framer": "^2.4.1",
     "framer-motion": "^10.16.4",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^3.5.9",
     "mongoose": "^7.6.2",
     "next": "^13.4.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "recoil": "^0.7.7",
     "siwe": "^2.1.4",
     "viem": "~1.12.2",
     "wagmi": "~1.4.2"
