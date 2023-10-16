@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Chain, chains as defaultChains } from "../context/chain";
+import { Chain, chains as defaultChains } from "../../context/chain";
 
 interface TableProps {
   chains?: Chain[];

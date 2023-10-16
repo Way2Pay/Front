@@ -1,16 +1,20 @@
 import React from "react";
-import { Coin, coins as defaultCoins } from "../context/coin";
+
+interface Coin {
+  name: string;
+  price: string;
+}
 
 interface CoinTableProps {
-  coins?: Coin[];
+  coins: Coin[];
   selectedCoin: string | null;
-  confirmedCoin: string | null; // Add this line
+  confirmedCoin: string | null;
   setSelectedCoin: (coin: string | null) => void;
   handleConfirmCoin: () => void;
 }
 
-const CoinTable: React.FC<CoinTableProps> = ({
-  coins = defaultCoins,
+const CoinTableUser: React.FC<CoinTableProps> = ({
+  coins,
   selectedCoin,
   confirmedCoin,
   setSelectedCoin,
@@ -26,25 +30,21 @@ const CoinTable: React.FC<CoinTableProps> = ({
                 Coin
               </th>
               <th scope="col" className="px-6 py-3">
-                Symbol
-              </th>
-              <th scope="col" className="px-6 py-3">
                 Price
               </th>
             </tr>
           </thead>
           <tbody>
-            {coins.map((coin) => (
+            {coins.map((token) => (
               <tr
-                key={coin.name}
+                key={token.name}
                 className={`border-b ${
-                  selectedCoin === coin.name ? "bg-blue-100" : "bg-white"
+                  selectedCoin === token.name ? "bg-blue-100" : "bg-white"
                 }`}
-                onClick={() => setSelectedCoin(coin.name)}
+                onClick={() => setSelectedCoin(token.name)}
               >
-                <td className="px-6 py-4">{coin.name}</td>
-                <td className="px-6 py-4">{coin.symbol}</td>
-                <td className="px-6 py-4">{coin.price}</td>
+                <td className="px-6 py-4">{token.name}</td>
+                <td className="px-6 py-4">{token.price}</td>
               </tr>
             ))}
           </tbody>
@@ -63,4 +63,4 @@ const CoinTable: React.FC<CoinTableProps> = ({
   );
 };
 
-export default CoinTable;
+export default CoinTableUser;
