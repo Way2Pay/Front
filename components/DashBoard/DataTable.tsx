@@ -16,12 +16,14 @@ const formatAddress = (address: string) => {
 
 type DataTableProps = {
   transactions: Transaction[];
+  deployedContracts: Transaction[]; // Adjusted name here
   onTransactionClick: (transaction: Transaction) => void;
 };
 
 const DataTable: React.FC<DataTableProps> = ({
   transactions,
   onTransactionClick,
+  deployedContracts,
 }) => {
   return (
     <>
@@ -75,30 +77,52 @@ const DataTable: React.FC<DataTableProps> = ({
             </div>
             <div className="h-full mt-12 lg:mt-0 border-mercury-400 lg:pl-24 md:border-l md:pl-12">
               <div className="text-xl text-center mb-10 font-bold">
-                All Transactions
+                Deployed Contracts
               </div>
               <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table className="w-full text-sm text-left text-gray-500">
-                  <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3">
-                        TRXID
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        COINS
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        VALUE
-                      </th>
-                      <th scope="col" className="px-6 py-3">
-                        DATE
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* You can add the second table's data mapping here */}
-                  </tbody>
-                </table>
+                {deployedContracts && deployedContracts.length > 0 ? (
+                  <table className="w-full text-sm text-left text-gray-500">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-6 py-3">
+                          TRXID
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          COINS
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          VALUE
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          DATE
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {deployedContracts.map((contract) => (
+                        <tr
+                          key={contract._id}
+                          onClick={() => onTransactionClick(contract)}
+                        >
+                          <td className="px-6 py-4">
+                            {formatAddress(contract._id)}
+                          </td>
+                          <td className="px-6 py-4">
+                            {formatAddress(contract.address)}
+                          </td>
+                          <td className="px-6 py-4">{contract.amount}</td>
+                          <td className="px-6 py-4">
+                            {formatAddress(contract.buyer)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-center p-4">
+                    You don't have any deployments.
+                  </p>
+                )}
               </div>
             </div>
           </div>
