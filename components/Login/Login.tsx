@@ -73,7 +73,9 @@ const Login: NextPage = () => {
     const data = await res.json()
     console.log(data);
     if(typeof window !==undefined)
+    console.log("updating accesstoken")
     localStorage.setItem('accessToken',data.token)
+    setAuth({...auth,accessToken:data.token})
   };
   // useEffect(() => {
   // 	messageSigned && goToDashboard()
