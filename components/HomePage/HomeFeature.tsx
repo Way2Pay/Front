@@ -13,7 +13,7 @@ const HomeFeature: React.FC = () => {
               <p className="max-w-xl mt-4 text-base tracking-tight text-gray-600">
                 Use this paragraph to share information about your company or
                 products. Make it engaging and interesting, and showcase your
-                brand's personality. Thanks for visiting our website!
+                brand&apos;s personality. Thanks for visiting our website!
               </p>
             </div>
             <div className="flex flex-col items-center justify-center max-w-lg gap-3 mx-auto mt-10 lg:flex-row lg:justify-start">
