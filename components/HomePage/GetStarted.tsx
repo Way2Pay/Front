@@ -25,7 +25,8 @@ const GetStarted: React.FC = () => {
                         </p>
                         <p className="max-w-xl mt-4 text-lg tracking-tight text-gray-200">
                           If you could kick the person in the pants responsible
-                          for most of your trouble, you wouldn't sit for a month
+                          for most of your trouble, you wouldn&apos;t sit for a
+                          month
                         </p>
                       </div>
                     </div>
