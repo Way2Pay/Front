@@ -10,6 +10,7 @@ import { useRecoilState } from "recoil";
 import Navbar from "../components/HomePage/Navbar";
 import DataTable from "../components/DashBoard/DataTable";
 import TransactionModal from "../components/DashBoard/TransactionModal";
+import Coins from "../components/DashBoard/Coins";
 
 const DashBoard: NextPage = () => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const DashBoard: NextPage = () => {
   const [auth, setAuth] = useRecoilState(authState);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
+  const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
 
   useEffect(() => {
     if (!auth.accessToken) {
@@ -44,18 +46,65 @@ const DashBoard: NextPage = () => {
           },
         }
       );
-      if (res.status === 200) {
+
+      // Check if the status is Unauthorized
+      if (res.status === 401) {
+        // Clear the token from local storage and auth state
+        localStorage.removeItem("accessToken");
+        setAuth((prevState) => ({
+          ...prevState,
+          accessToken: null,
+        }));
+        // Redirect to login
+        router.push("/login");
+        return;
+      } else if (res.status === 200) {
         setTransactions((await res.json()).transactions);
         setHasFetchedTransactions(true);
       } else {
-        console.log(res);
       }
     };
 
     if (auth.accessToken) {
       fetchTransactions();
+      fetchDeployedContracts(); // Fetch the deployed contracts
     }
   }, [auth.accessToken, router]);
+
+  const fetchDeployedContracts = async () => {
+    try {
+      console.log("Starting fetchDeployedContracts...");
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deploy`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${auth.accessToken}`,
+        },
+      });
+
+      console.log("Response status:", res.status);
+
+      if (res.status === 401) {
+        console.log("401 Unauthorized - Redirecting to login...");
+        localStorage.removeItem("accessToken");
+        setAuth((prevState) => ({
+          ...prevState,
+          accessToken: null,
+        }));
+        router.push("/login");
+        return;
+      } else if (res.status === 200) {
+        console.log("200 OK - Setting deployed contracts...");
+        const data = await res.json();
+        console.log("Received data:", data);
+        setDeployedContracts(data.contracts); // Assuming the API returns an object with a contracts key
+      } else {
+        console.log("Unknown status:", res.status);
+      }
+    } catch (error) {
+      console.error("Error in fetchDeployedContracts:", error);
+    }
+  };
 
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
@@ -72,10 +121,14 @@ const DashBoard: NextPage = () => {
     <>
       <Navbar />
       {hasFetchedTransactions && transactions.length > 0 && (
-        <DataTable
-          transactions={transactions}
-          onTransactionClick={handleTransactionClick}
-        />
+        <div>
+          <Coins />
+          <DataTable
+            transactions={transactions}
+            deployedContracts={deployedContracts}
+            onTransactionClick={handleTransactionClick}
+          />
+        </div>
       )}
       {selectedTransaction && (
         <TransactionModal
