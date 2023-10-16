@@ -1,22 +1,29 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
+import { authState } from "../../state/atoms";
+import {useRecoilState} from "recoil"
 import { SiweMessage, generateNonce } from "siwe";
 import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import { NextPage } from "next";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 
 const Login: NextPage = () => {
+
+  const [auth,setAuth] = useRecoilState(authState)
   const [messageSigned, setmessageSigned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { address, isConnected } = useAccount();
   const { data, signMessageAsync } = useSignMessage();
   const nonce = generateNonce();
 
+  console.log(auth)
   const [domain, setDomain] = useState("");
   const [origin, setOrigin] = useState("");
   useEffect(() => {
     setDomain(window.location.host);
     setOrigin(window.location.origin);
+    if(!auth.accessToken)
+    setAuth({...auth,accessToken:localStorage.getItem('accessToken')})
   }, []);
   console.log("HEY", origin, domain);
   console.log("HE", nonce);
@@ -63,7 +70,10 @@ const Login: NextPage = () => {
       body: JSON.stringify({ address, message: message, signature: signature }),
       credentials: "include",
     });
-    console.log(res);
+    const data = await res.json()
+    console.log(data);
+    if(typeof window !==undefined)
+    localStorage.setItem('accessToken',data.token)
   };
   // useEffect(() => {
   // 	messageSigned && goToDashboard()

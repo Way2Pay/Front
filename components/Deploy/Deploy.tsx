@@ -1,6 +1,7 @@
 import { NextPage } from "next";
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { authState } from "../../state/atoms";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useWalletClient } from "wagmi";
 import { disconnect } from "@wagmi/core";
@@ -19,7 +20,7 @@ import CoinTable from "../CoinTable/CoinTableUser";
 function DeployWelcome() {
   const { switchNetwork } = useSwitchNetwork();
 
-  
+  const [auth,setAuth]= useRecoilState(authState)
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
@@ -27,10 +28,24 @@ function DeployWelcome() {
   const { openConnectModal } = useConnectModal();
   const [chainId, setChainId] = useState(1);
   const { address, isConnecting, isDisconnected } = useAccount();
+  console.log("auth",auth)
   const disconnectWallet = () => {
     disconnect();
   };
 
+  useEffect(()=>{
+    console.log
+    if(!auth.accessToken)
+    setAuth({...auth,accessToken:localStorage.getItem('accessToken')})
+  },[])
+
+  useEffect(() => {
+    const abc = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`);
+      console.log(await res.json())
+    };
+    abc();
+  });
   function getHeadingText() {
     if (!address || isDisconnected) {
       return {
@@ -71,11 +86,10 @@ function DeployWelcome() {
   };
 
   const handleConfirmChain = () => {
-    setChainId(chainNameToIdMap[selectedChain || ""])
+    setChainId(chainNameToIdMap[selectedChain || ""]);
     setConfirmedChain(selectedChain);
 
     // Mapping from chain names to their respective chain IDs
-
 
     const selectedChainId = chainNameToIdMap[selectedChain || ""];
 
@@ -85,7 +99,7 @@ function DeployWelcome() {
     }
 
     // Switch to the selected chain
-    setChainId(selectedChainId)
+    setChainId(selectedChainId);
     switchNetwork(selectedChainId);
   };
 
@@ -106,23 +120,21 @@ function DeployWelcome() {
 
   async function deployContract() {
     let abiData = require("../../destabi.json");
-    
+
     console.log(client);
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
-    try{ 
+    try {
       const a = await client?.deployContract({
-      abi: abiData["abi"],
-      account: address,
-      bytecode: abiData["bytecode"] as `0x${string}`,
-      args: [
-        "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1",
-        "0xE592427A0AEce92De3Edee1F18E0157C05861564",
-      ],
-    });
-    console.log(a)
-  } catch (err:unknown){
-   
-  }
+        abi: abiData["abi"],
+        account: address,
+        bytecode: abiData["bytecode"] as `0x${string}`,
+        args: [
+          "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1",
+          "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+        ],
+      });
+      console.log(a);
+    } catch (err: unknown) {}
   }
   const { heading, subheading } = getHeadingText();
 
@@ -258,7 +270,6 @@ function DeployWelcome() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
     </div>
