@@ -1,9 +1,9 @@
-import clientPromise from "../../../db/database";
+import clientPromise from "../../../../db/database";
 import {
   getToken,
   getAuthToken,
   verifyToken,
-} from "../../../backend-services/auth";
+} from "../../../../backend-services/auth";
 export default async function handler(request, response) {
   if (request.method === "OPTIONS") return response.status(200).body({ OK });
 
