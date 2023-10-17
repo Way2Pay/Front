@@ -1,6 +1,10 @@
 import React from "react";
 
-const Coins: React.FC = () => {
+interface CoinsProps {
+  mode?: "earned" | "spent";
+}
+
+const Coins: React.FC<CoinsProps> = ({ mode = "earned" }) => {
   const handleMouseEnter = (
     event: React.MouseEvent<HTMLVideoElement, MouseEvent>
   ) => {
@@ -23,7 +27,7 @@ const Coins: React.FC = () => {
                 />
                 <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 bg-gray-800 bg-opacity-60 p-4 px-10 rounded-xl ">
                   <div className="text-lg font-medium leading-6 text-white">
-                    Total Earned
+                    {`Total ${mode.charAt(0).toUpperCase() + mode.slice(1)}`}
                     <br />
                     <div className="flex items-center justify-center h-full">
                       <span className="font-light">{`200 ${coin}`}</span>

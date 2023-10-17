@@ -2,7 +2,7 @@
 import { Transaction } from "../components/DashBoard/DataTable";
 import { useRouter } from "next/router";
 import { PushAPI } from "@pushprotocol/restapi";
-import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
+// import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
 import Login from "../components/Login/Login";
 import { NextPage } from "next";
 import RedirectWelome from "../components/RedirectWelcome/RedirectWelcome";
@@ -14,11 +14,10 @@ import DataTable from "../components/DashBoard/DataTable";
 import TransactionModal from "../components/DashBoard/TransactionModal";
 import Coins from "../components/DashBoard/Coins";
 import { useWalletClient } from "wagmi";
-import {sendMessage} from "../frontend-services/pushServices"
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes";
 import { PushContext } from "./_app";
-const DashBoard: NextPage = () => {
+const SellerDashBoard: NextPage = () => {
   const router = useRouter();
 
   const [auth, setAuth] = useRecoilState(authState);
@@ -26,13 +25,10 @@ const DashBoard: NextPage = () => {
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
   const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
   const { data: client } = useWalletClient();
-  const {userPPP, setUserPPP} = useContext(PushContext)
-
-  console.log("HERE",userPPP)
-  useEffect(()=>{
-    //if(!userPPP)
-    //initializePush();
-  },[client])
+  const {userPPP,setUserPPP} = useContext(PushContext)
+  const handleSwitchToSellerDashboard = () => {
+    router.push("/userDashboard"); // Assuming "/sellerDashboard" is the route for the seller dashboard.
+  };
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
@@ -68,7 +64,7 @@ const DashBoard: NextPage = () => {
           ...prevState,
           accessToken: null,
         }));
-        setUserPPP(null)
+        setUserPPP(null);
         // Redirect to login
         router.push("/login");
         return;
@@ -80,10 +76,9 @@ const DashBoard: NextPage = () => {
     };
 
     if (auth.accessToken) {
-     
       fetchTransactions();
       fetchDeployedContracts();
-      
+
       // Fetch the deployed contracts
     }
   }, [auth.accessToken, router]);
@@ -137,13 +132,22 @@ const DashBoard: NextPage = () => {
   return (
     <>
       <Navbar />
+      <div className="flex justify-center my-4">
+        <button
+          onClick={handleSwitchToSellerDashboard}
+          className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+        >
+          Switch to User Dashboard
+        </button>
+      </div>
       {hasFetchedTransactions && transactions.length > 0 && (
         <div>
-          <Coins />
+          <Coins mode="earned" />
           <DataTable
             transactions={transactions}
             deployedContracts={deployedContracts}
             onTransactionClick={handleTransactionClick}
+            showDeployedContracts={true} // Set to false for UserDashboard
           />
         </div>
       )}
@@ -157,4 +161,4 @@ const DashBoard: NextPage = () => {
   );
 };
 
-export default DashBoard;
+export default SellerDashBoard;
