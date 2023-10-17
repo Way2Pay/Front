@@ -16,21 +16,33 @@ const formatAddress = (address: string) => {
 
 type DataTableProps = {
   transactions: Transaction[];
-  deployedContracts: Transaction[]; // Adjusted name here
+  deployedContracts?: Transaction[]; // Make this optional
   onTransactionClick: (transaction: Transaction) => void;
+  showDeployedContracts?: boolean; // New prop
 };
 
 const DataTable: React.FC<DataTableProps> = ({
   transactions,
   onTransactionClick,
-  deployedContracts,
+  deployedContracts = [],
+  showDeployedContracts = true, // Default value is true
 }) => {
   return (
     <>
       <section className="overflow-hidden">
         <div className="items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 ">
-          <div className="grid items-start grid-cols-1 md:grid-cols-2">
-            <div className="lg:pr-24 md:pr-12">
+          <div
+            className={`grid items-start ${
+              showDeployedContracts
+                ? "grid-cols-1 md:grid-cols-2"
+                : "grid-cols-1"
+            } `}
+          >
+            <div
+              className={`lg:pr-24 md:pr-12 ${
+                !showDeployedContracts ? "mx-auto max-w-screen-xl" : ""
+              }`} // Conditionally apply max-w-screen-xl class here
+            >
               <div className="text-xl text-center mb-10 font-bold">
                 All Transactions
               </div>
@@ -75,56 +87,58 @@ const DataTable: React.FC<DataTableProps> = ({
                 </table>
               </div>
             </div>
-            <div className="h-full mt-12 lg:mt-0 border-mercury-400 lg:pl-24 md:border-l md:pl-12">
-              <div className="text-xl text-center mb-10 font-bold">
-                Deployed Contracts
-              </div>
-              <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                {deployedContracts && deployedContracts.length > 0 ? (
-                  <table className="w-full text-sm text-left text-gray-500">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                      <tr>
-                        <th scope="col" className="px-6 py-3">
-                          TRXID
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          COINS
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          VALUE
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          DATE
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {deployedContracts.map((contract) => (
-                        <tr
-                          key={contract._id}
-                          onClick={() => onTransactionClick(contract)}
-                        >
-                          <td className="px-6 py-4">
-                            {formatAddress(contract._id)}
-                          </td>
-                          <td className="px-6 py-4">
-                            {formatAddress(contract.address)}
-                          </td>
-                          <td className="px-6 py-4">{contract.amount}</td>
-                          <td className="px-6 py-4">
-                            {formatAddress(contract.buyer)}
-                          </td>
+            {showDeployedContracts && ( // Conditional rendering based on the prop
+              <div className="h-full mt-12 lg:mt-0 border-mercury-400 lg:pl-24 md:border-l md:pl-12">
+                <div className="text-xl text-center mb-10 font-bold">
+                  Deployed Contracts
+                </div>
+                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                  {deployedContracts && deployedContracts.length > 0 ? (
+                    <table className="w-full text-sm text-left text-gray-500">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                          <th scope="col" className="px-6 py-3">
+                            TRXID
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            COINS
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            VALUE
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            DATE
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="text-center p-4">
-                    You don&apos;t have any deployments.
-                  </p>
-                )}
+                      </thead>
+                      <tbody>
+                        {deployedContracts.map((contract) => (
+                          <tr
+                            key={contract._id}
+                            onClick={() => onTransactionClick(contract)}
+                          >
+                            <td className="px-6 py-4">
+                              {formatAddress(contract._id)}
+                            </td>
+                            <td className="px-6 py-4">
+                              {formatAddress(contract.address)}
+                            </td>
+                            <td className="px-6 py-4">{contract.amount}</td>
+                            <td className="px-6 py-4">
+                              {formatAddress(contract.buyer)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="text-center p-4">
+                      You don&apos;t have any deployments.
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>

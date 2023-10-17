@@ -7,12 +7,13 @@ import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import { NextPage } from "next";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
+
 const Login: NextPage = () => {
   const router = useRouter();
   const [auth, setAuth] = useRecoilState(authState);
   const [messageSigned, setmessageSigned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isDisconnected } = useAccount();
   const { data, signMessageAsync } = useSignMessage();
   const nonce = generateNonce();
 
@@ -80,7 +81,7 @@ const Login: NextPage = () => {
       if (typeof window !== undefined) console.log("updating accesstoken");
       localStorage.setItem("accessToken", data.token);
       setAuth({ ...auth, accessToken: data.token });
-      router.push("/dashboard");
+      // router.push("/dashboard");
     } catch (err) {
       console.log("User signature denied");
     }
@@ -93,21 +94,41 @@ const Login: NextPage = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="absolute inset-0 "></div>
-      <div className="bg-white p-8 z-10 text-center relative">
+      <div className="bg-white p-8 z-10 text-center relative items-center">
         {/* Main Content */}
         <h1 className="text-2xl font-semibold mb-4">Welcome Back!</h1>
         <p className="mb-6 text-gray-600 text-lg">Please sign in to continue</p>
 
-        <div className="mb-4">
+        <div className="flex items-center justify-center py-10">
           <ConnectButton />
         </div>
 
-        <button
-          className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
-          onClick={signInWithEthereum}
-        >
-          Sign In With Ethereum
-        </button>
+        {!auth.accessToken && (
+          <div className="py-5">
+            <button
+              className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+              onClick={signInWithEthereum}
+            >
+              Sign In With Ethereum
+            </button>
+          </div>
+        )}
+        {auth.accessToken && (
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+              onClick={() => router.push("/sellerDashboard")}
+            >
+              Go to Seller Dashboard
+            </button>
+            <button
+              className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+              onClick={() => router.push("/userDashboard")}
+            >
+              Go to User Dashboard
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
