@@ -3,7 +3,7 @@ export default function handler(request, response) {
     return response.status(200).body({OK})
     else if(request.method==="GET"){
         return response.status(200).json({
-            "abc.eth":"1"
+            "0x620E1cf616444d524c81841B85f60F8d3Ea64751":"1"
         })
     }
   }
