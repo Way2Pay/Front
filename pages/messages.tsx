@@ -24,7 +24,7 @@ const Deploy: NextPage = () => {
         }
       };
     useEffect(()=>{
-        initializePush();
+        //initializePush();
     },[])
   return (
     <>

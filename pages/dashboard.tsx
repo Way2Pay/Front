@@ -26,6 +26,19 @@ const DashBoard: NextPage = () => {
   const { data: client } = useWalletClient();
   const [userPPP, setUserPPP] = useState<PushAPI>();
 
+  const initializePush = async () => {
+    if (client) {
+      let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
+      userAlice.stream.on(STREAM.NOTIF, (data: any) => {
+        console.log("PUSHDATA",data);
+      });
+      setUserPPP(userAlice);
+    }
+  };
+  useEffect(()=>{
+    if(!userPPP)
+    initializePush();
+  },[client])
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
@@ -71,21 +84,10 @@ const DashBoard: NextPage = () => {
       }
     };
 
-    const initializePush = async () => {
-      if (client) {
-        let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
-        userAlice.stream.on(STREAM.NOTIF, (data: any) => {
-          console.log(data);
-        });
-        setUserPPP(userAlice);
-      }
-    };
-
     if (auth.accessToken) {
+     
       fetchTransactions();
       fetchDeployedContracts();
-      if(client)
-      initializePush();
       
       // Fetch the deployed contracts
     }
