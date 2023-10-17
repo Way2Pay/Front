@@ -11,8 +11,8 @@ export const createChannel = async (userObject:PushAPI)=>{
       return response;
 }
 
-export const sendNotification = async (userObject:PushAPI)=>{
-    const sendNotifRes = await userObject.channel.send(['*'], {
+export const sendNotification = async (userObject:PushAPI,recepient:string,title:string,body:string)=>{
+    const sendNotifRes = await userObject.channel.send([recepient], {
         notification: { title: 'test', body: 'test' },
       })
       return sendNotifRes
