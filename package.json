@@ -14,6 +14,7 @@
     "@pushprotocol/restapi": "^1.4.24",
     "@pushprotocol/socket": "^0.5.2",
     "@rainbow-me/rainbowkit": "^1.1.1",
+    "@sismo-core/sismo-connect-react": "^0.0.23",
     "alchemy-sdk": "^2.10.1",
     "ethers": "^5.7.2",
     "framer": "^2.4.1",
