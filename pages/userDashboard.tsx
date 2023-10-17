@@ -6,7 +6,7 @@ import { PushAPI } from "@pushprotocol/restapi";
 import Login from "../components/Login/Login";
 import { NextPage } from "next";
 import RedirectWelome from "../components/RedirectWelcome/RedirectWelcome";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { authState } from "../state/atoms";
 import { useRecoilState } from "recoil";
 import Navbar from "../components/HomePage/Navbar";
@@ -16,6 +16,7 @@ import Coins from "../components/DashBoard/Coins";
 import { useWalletClient } from "wagmi";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes";
+import { PushContext } from "./_app";
 const UserDashBoard: NextPage = () => {
   const router = useRouter();
   const handleSwitchToSellerDashboard = () => {
@@ -26,20 +27,9 @@ const UserDashBoard: NextPage = () => {
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
   const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
   const { data: client } = useWalletClient();
-  const [userPPP, setUserPPP] = useState<PushAPI>();
+  const {userPPP, setUserPPP} = useContext(PushContext)
 
-  const initializePush = async () => {
-    if (client) {
-      let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
-      userAlice.stream.on(STREAM.NOTIF, (data: any) => {
-        console.log("PUSHDATA", data);
-      });
-      setUserPPP(userAlice);
-    }
-  };
-  useEffect(() => {
-    if (!userPPP) initializePush();
-  }, [client]);
+ 
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");

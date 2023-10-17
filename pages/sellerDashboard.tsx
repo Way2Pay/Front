@@ -1,11 +1,8 @@
 "use client";
 import { Transaction } from "../components/DashBoard/DataTable";
 import { useRouter } from "next/router";
-import { PushAPI } from "@pushprotocol/restapi";
 // import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
-import Login from "../components/Login/Login";
 import { NextPage } from "next";
-import RedirectWelome from "../components/RedirectWelcome/RedirectWelcome";
 import { useContext, useEffect, useState } from "react";
 import { authState } from "../state/atoms";
 import { useRecoilState } from "recoil";
@@ -18,6 +15,7 @@ import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes";
 import { PushContext } from "./_app";
 const SellerDashBoard: NextPage = () => {
+  
   const router = useRouter();
 
   const [auth, setAuth] = useRecoilState(authState);
@@ -32,7 +30,7 @@ const SellerDashBoard: NextPage = () => {
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
-
+      console.log("TOKEN",auth.accessToken)
       if (token) {
         setAuth({
           ...auth,
@@ -85,7 +83,7 @@ const SellerDashBoard: NextPage = () => {
 
   const fetchDeployedContracts = async () => {
     try {
-      console.log("Starting fetchDeployedContracts...");
+      
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deploy`, {
         method: "GET",
@@ -94,10 +92,10 @@ const SellerDashBoard: NextPage = () => {
         },
       });
 
-      console.log("Response status:", res.status);
+      
 
       if (res.status === 401) {
-        console.log("401 Unauthorized - Redirecting to login...");
+       
         localStorage.removeItem("accessToken");
         setAuth((prevState) => ({
           ...prevState,
@@ -106,12 +104,12 @@ const SellerDashBoard: NextPage = () => {
         router.push("/login");
         return;
       } else if (res.status === 200) {
-        console.log("200 OK - Setting deployed contracts...");
+      
         const data = await res.json();
-        console.log("Received data:", data);
+      
         setDeployedContracts(data.contracts); // Assuming the API returns an object with a contracts key
       } else {
-        console.log("Unknown status:", res.status);
+        
       }
     } catch (error) {
       console.error("Error in fetchDeployedContracts:", error);

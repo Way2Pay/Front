@@ -1,8 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { authState, initialAuthState } from "../../state/atoms";
+import { useRecoilState } from "recoil";
 const Navbar: React.FC = () => {
+
+  const [auth,setAuth]= useRecoilState(authState)
   const [open, setOpen] = useState(false);
   const router = useRouter();
+
+  const [isLogged,setIsLogged]=useState(false)
+  useEffect(()=>{
+    if(localStorage.getItem('accessToken')?.length!==0||auth.accessToken)
+   { 
+    setIsLogged(true);}
+  },[])
+  const handleClick=()=>{
+    if(isLogged)
+    {
+      localStorage.setItem('accessToken',"")
+      setAuth(initialAuthState)
+      router.push('')
+    }
+    else
+    router.push('/login')
+  }
   return (
     <div className="w-full mx-auto bg-white border-b 2xl:max-w-7xl">
       <div className="relative flex flex-col w-full p-5 mx-auto bg-white md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
@@ -62,8 +83,8 @@ const Navbar: React.FC = () => {
           </a>
 
           <div className="inline-flex items-center gap-2 list-none lg:ml-auto">
-            <button onClick={()=>{router.push('/login')}} className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline">
-              Sign in
+            <button onClick={()=>{handleClick()}} className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline">
+              {isLogged?"Sign Out":"Sign in"}
             </button>
           </div>
         </nav>
