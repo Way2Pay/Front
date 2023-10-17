@@ -1,6 +1,8 @@
 "use client";
 import { Transaction } from "../components/DashBoard/DataTable";
 import { useRouter } from "next/router";
+import { PushAPI } from "@pushprotocol/restapi";
+import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
 import Login from "../components/Login/Login";
 import { NextPage } from "next";
 import RedirectWelome from "../components/RedirectWelcome/RedirectWelcome";
@@ -11,7 +13,9 @@ import Navbar from "../components/HomePage/Navbar";
 import DataTable from "../components/DashBoard/DataTable";
 import TransactionModal from "../components/DashBoard/TransactionModal";
 import Coins from "../components/DashBoard/Coins";
-
+import { useWalletClient } from "wagmi";
+import { ENV } from "@pushprotocol/restapi/src/lib/constants";
+import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes";
 const DashBoard: NextPage = () => {
   const router = useRouter();
 
@@ -19,7 +23,22 @@ const DashBoard: NextPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
   const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
+  const { data: client } = useWalletClient();
+  const [userPPP, setUserPPP] = useState<PushAPI>();
 
+  const initializePush = async () => {
+    if (client) {
+      let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
+      userAlice.stream.on(STREAM.NOTIF, (data: any) => {
+        console.log("PUSHDATA",data);
+      });
+      setUserPPP(userAlice);
+    }
+  };
+  useEffect(()=>{
+    if(!userPPP)
+    initializePush();
+  },[client])
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
@@ -66,8 +85,11 @@ const DashBoard: NextPage = () => {
     };
 
     if (auth.accessToken) {
+     
       fetchTransactions();
-      fetchDeployedContracts(); // Fetch the deployed contracts
+      fetchDeployedContracts();
+      
+      // Fetch the deployed contracts
     }
   }, [auth.accessToken, router]);
 
