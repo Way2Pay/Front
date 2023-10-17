@@ -3,6 +3,7 @@ import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import type { AppProps } from "next/app";
+import {PushAPI} from "@pushprotocol/restapi"
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
   arbitrum,
@@ -22,6 +23,7 @@ import {
   useRecoilValue,
 } from "recoil";
 import { publicProvider } from "wagmi/providers/public";
+import { createContext, useContext, useState } from "react";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -51,13 +53,18 @@ const wagmiConfig = createConfig({
   publicClient,
   webSocketPublicClient,
 });
-
+export const PushContext = createContext<any|null>(null);
 function MyApp({ Component, pageProps }: AppProps) {
+
+  const [userPPP,setUserPPP]=useState<PushAPI|null>(null)
+  
   return (
+
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
         <RecoilRoot>
-          <Component {...pageProps} />
+          <PushContext.Provider value={{userPPP,setUserPPP}}>
+          <Component {...pageProps} /></PushContext.Provider>
         </RecoilRoot>
       </RainbowKitProvider>
     </WagmiConfig>

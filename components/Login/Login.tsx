@@ -3,14 +3,18 @@ import { ethers } from "ethers";
 import { authState } from "../../state/atoms";
 import { useRecoilState } from "recoil";
 import { SiweMessage, generateNonce } from "siwe";
-import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
+import { useAccount, useWalletClient, useSignMessage } from "wagmi";
 import { NextPage } from "next";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
+import { PushAPI } from "@pushprotocol/restapi";
 import { useRouter } from "next/navigation";
-
+import { PushContext } from "../../pages/_app";
+import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 const Login: NextPage = () => {
+  const { userPPP, setUserPPP } = useContext(PushContext);
   const router = useRouter();
   const [auth, setAuth] = useRecoilState(authState);
+  const { data: client } = useWalletClient();
   const [messageSigned, setmessageSigned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { address, isConnected, isDisconnected } = useAccount();
@@ -78,12 +82,17 @@ const Login: NextPage = () => {
       });
       const data = await res.json();
       console.log(data);
-      if (typeof window !== undefined) console.log("updating accesstoken");
-      localStorage.setItem("accessToken", data.token);
-      setAuth({ ...auth, accessToken: data.token });
-      // router.push("/dashboard");
+      client;
+      if (typeof window !== undefined && client) {
+        let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
+        setUserPPP(userAlice);
+        console.log("updating accesstoken");
+        localStorage.setItem("accessToken", data.token);
+        setAuth({ ...auth, accessToken: data.token });
+        router.push("/dashboard");
+      }
     } catch (err) {
-      console.log("User signature denied");
+      console.log("User denied Signature");
     }
   };
   // useEffect(() => {
