@@ -22,13 +22,13 @@ const Coins: React.FC = () => {
                   className="w-full h-full object-cover rounded-xl"
                 />
                 <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 bg-gray-800 bg-opacity-60 p-4 px-10 rounded-xl ">
-                  <p className="text-lg font-medium leading-6 text-white">
+                  <div className="text-lg font-medium leading-6 text-white">
                     Total Earned
                     <br />
                     <div className="flex items-center justify-center h-full">
                       <span className="font-light">{`200 ${coin}`}</span>
                     </div>
-                  </p>
+                  </div>
                 </div>
               </div>
             ))}
