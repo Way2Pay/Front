@@ -89,7 +89,6 @@ const Login: NextPage = () => {
         console.log("updating accesstoken");
         localStorage.setItem("accessToken", data.token);
         setAuth({ ...auth, accessToken: data.token });
-        router.push("/dashboard");
       }
     } catch (err) {
       console.log("User denied Signature");
