@@ -1,0 +1,29 @@
+diff --git a/node_modules/@connext/chain-abstraction/dist/libs/origin/xcallcalldata.js b/node_modules/@connext/chain-abstraction/dist/libs/origin/xcallcalldata.js
+index 8d102ca..d6a1d0d 100644
+--- a/node_modules/@connext/chain-abstraction/dist/libs/origin/xcallcalldata.js
++++ b/node_modules/@connext/chain-abstraction/dist/libs/origin/xcallcalldata.js
+@@ -42,6 +42,7 @@ const getPoolFeeForUniV3 = async (domainId, rpc, token0, token1) => {
+     // TODO: This method requires more than 10 rpc calls. You need to think of a way to reduce the number of rpc requests
+     // That would be better to do it without using rpc like using sdk.
+     const swapperConfig = helpers_1.DestinationSwapperPerDomain[domainId];
++    console.log(domainId);
+     const rpcProvider = new ethers_1.providers.JsonRpcProvider(rpc);
+     const swapperContract = (0, mockable_1.getContract)(swapperConfig.address, helpers_1.UniV3SwapperABI, rpcProvider);
+     const univ3Router = await swapperContract.uniswapV3Router();
+diff --git a/node_modules/@connext/chain-abstraction/src/helpers/index.ts b/node_modules/@connext/chain-abstraction/src/helpers/index.ts
+index f5cfa8f..d3cd387 100644
+--- a/node_modules/@connext/chain-abstraction/src/helpers/index.ts
++++ b/node_modules/@connext/chain-abstraction/src/helpers/index.ts
+@@ -165,5 +165,11 @@ export const DestinationSwapperPerDomain: Record<
+     address: "",
+     quoter: "",
+     path: "",
+-  }, // Polygon zkEVM
++  },
++  "1735353714": {
++    type: Swapper.UniV3,
++    address: "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
++    quoter: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
++    path: Swapper.UniV3,
++  },  // Polygon zkEVM
+ };

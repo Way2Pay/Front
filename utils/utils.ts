@@ -15,7 +15,7 @@ type DomainID = {
       137: "https://polygon.llamarpc.com",
       42161: "https://arb-mainnet-public.unifra.io",
       56: "https://bsc.rpc.blxrbdn.com",
-      5: "https://goerli.drpc.org/"
+      5: "https://eth-goerli.g.alchemy.com/v2/demo"
     };
   
     return chainToRPC[chainId];
