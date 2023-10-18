@@ -6,29 +6,18 @@ import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useWalletClient } from "wagmi";
 import { disconnect } from "@wagmi/core";
 import dynamic from "next/dynamic";
-import { useSwitchNetwork } from "wagmi";
-import "axios";
+import { useSwitchNetwork} from "wagmi";
+import {BigNumber, ethers} from "ethers";
 import {chainIdToRPC,domainToChainID,chainToDomainId,chainIdToChainName} from "../utils/utils";
-import {
-    getPoolFeeForUniV3,
-    getSwapAndXcallAddress,
-    getXCallCallData,
-    getSupportedAssetsForDomain,
-    getPriceImpactForSwaps,
-  } from "@connext/chain-abstraction";
-  import {
-    DestinationCallDataParams,
-    Swapper,
-    SwapAndXCallParams,
-    EstimateQuoteAmountArgs,
-  } from "@connext/chain-abstraction/dist/types";
-import { SdkBase, SdkConfig, create } from "@connext/sdk";
+
+import { SdkBase, SdkConfig, SdkUtils, create } from "@connext/sdk";
 import {
   tokenAddresses,
   routerAddress,
 } from "../context/chainTokenaddresses";
 import { ContractFactory } from "ethers";
 import "../destabi.json";
+import { WalletClient } from "viem";
 import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../context/motionpresets";
 import ChainTable from "../components/ChainTable/ChainTable";
@@ -41,6 +30,7 @@ function DeployWelcome() {
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [chainId, setChainId] = useState(1);
   const { address } = useAccount();
+  const [utils, setUtils] = useState<SdkUtils>();
   console.log("auth",auth)
 
   useEffect(()=>{
@@ -84,9 +74,9 @@ function DeployWelcome() {
               },
           },
         };
-        const {sdkBase:data} =await create(sdkConfig);
+        const {sdkBase:data, sdkUtils:data2} =await create(sdkConfig);
         setSDKBase(data)
-
+        setUtils(data2)
       }
     };
 
@@ -95,8 +85,69 @@ function DeployWelcome() {
 
   async function deployContract() {
     let abiData = require("../destabi.json");
+    const poolFee = 3000;
+  
+    const forwardCallData = ethers.utils.defaultAbiCoder.encode(
+      ["address"],
+      ["0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"],
+    );
 
-    const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
+    const relayerFee = (
+      await sdkBase?.estimateRelayerFee({
+        originDomain: "9991", 
+        destinationDomain: "1735353714"
+      })
+    )?.toString();
+
+    const xcallParams = {
+      origin: "9991",           // send from Goerli
+      destination: "1735353714", // to Mumbai
+      to: "0x7E0BCCea5Ab00c7aE47cDd9052a1032406950261",              // the address that should receive the funds on destination
+      asset: "0x7af963cF6D228E564e2A0aA0DdBF06210B38615D",             // address of the token contract
+      delegate: address,        // address allowed to execute transaction on destination side in addition to relayers
+      amount: 100,                 // amount of tokens to transfer
+      slippage: 100,             // the maximum amount of slippage the user will accept in BPS (e.g. 30 = 0.3%)
+      callData: "0x",                 // empty calldata for a simple transfer (byte-encoded)
+      relayerFee: relayerFee,         // fee paid to relayers 
+    };
+
+    const approveTxReq = await sdkBase?.approveIfNeeded(
+      "9991",
+      "0x7af963cF6D228E564e2A0aA0DdBF06210B38615D",
+      "100"
+    );
+
+    function walletClientToSigner(walletClient: WalletClient) {
+      const { account, chain, transport } = walletClient
+      if(!chain ){
+        return null;
+      }
+      const network = {
+        chainId: chain.id,
+        name: chain.name,
+        ensAddress: chain.contracts?.ensRegistry?.address,
+      }
+
+      const provider = new ethers.providers.Web3Provider(transport, network)
+      const signer = provider.getSigner(account?.address)
+      return signer
+    }
+
+    
+    const signer = client?walletClientToSigner(client) : null;
+
+    if (approveTxReq) {
+    
+
+      const approveTxReceipt = await signer?.sendTransaction(approveTxReq);
+      await approveTxReceipt?.wait();
+    }
+
+    const xcallTxReq = await sdkBase?.xcall(xcallParams)!;
+    xcallTxReq.gasLimit = BigNumber.from("20000000"); 
+    const xcallTxReceipt = await signer?.sendTransaction(xcallTxReq);
+    console.log(xcallTxReceipt);
+    await xcallTxReceipt?.wait();
     
   }
 
