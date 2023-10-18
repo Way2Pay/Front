@@ -12,13 +12,13 @@ interface ActiveConversation {
   name: string;
   avatar: string;
   unreadCount?: number;
+  chatId: string;
 }
-
 interface Message {
   sender: "self" | "other";
   content: string;
-  avatar: string;
-  seen?: boolean;
+  timestamp: number;
+  // Add any other fields you might need
 }
 
 interface ChatsProps {
@@ -26,13 +26,17 @@ interface ChatsProps {
   activeConversations: ActiveConversation[];
   archivedConversations: ActiveConversation[];
   messages: Message[];
+  onChatSelect: (chatId: string) => void; // Add this line
 }
+const address = "0x0DE9fF5790C73c4b2D5CD9fA1D209C472ad44270";
+const userAliceDID = `eip155:${address}`;
 
 const Chats: React.FC<ChatsProps> = ({
   userProfile,
   activeConversations,
   archivedConversations,
   messages,
+  onChatSelect,
 }) => {
   return (
     <div className="flex h-screen antialiased text-gray-800">
@@ -86,6 +90,7 @@ const Chats: React.FC<ChatsProps> = ({
                 <button
                   key={conversation.name}
                   className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
+                  onClick={() => onChatSelect(conversation.chatId)}
                 >
                   <div className="ml-2 text-sm font-semibold">
                     {conversation.name}
@@ -105,26 +110,35 @@ const Chats: React.FC<ChatsProps> = ({
             <div className="flex flex-col h-full overflow-x-auto mb-4">
               <div className="flex flex-col h-full">
                 <div className="grid grid-cols-12 gap-y-2">
-                  <div className="col-start-1 col-end-8 p-3 rounded-lg">
-                    <div className="flex flex-row items-center">
-                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-                        A
-                      </div>
-                      <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
-                        <div>Hey How are you today?</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-start-6 col-end-13 p-3 rounded-lg">
-                    <div className="flex items-center justify-start flex-row-reverse">
-                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-                        A
-                      </div>
-                      <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
-                        <div>Im ok what about you?</div>
-                      </div>
-                    </div>
-                  </div>
+                  {messages.map((message, index) => {
+                    if (message.sender === "self") {
+                      return (
+                        <div
+                          key={index}
+                          className="col-start-6 col-end-13 p-3 rounded-lg"
+                        >
+                          <div className="flex items-center justify-start flex-row-reverse">
+                            <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
+                              <div>{message.content}</div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={index}
+                          className="col-start-1 col-end-8 p-3 rounded-lg"
+                        >
+                          <div className="flex flex-row items-center">
+                            <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
+                              <div>{message.content}</div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
               </div>
             </div>

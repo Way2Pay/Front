@@ -6,38 +6,75 @@ import { PushAPI } from "@pushprotocol/restapi";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { useWalletClient } from "wagmi";
 import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes";
-import { sendMessage } from "../frontend-services/pushServices";
+import {
+  sendMessage,
+  getChatHistory,
+  getChatsList,
+} from "../frontend-services/pushServices";
 import Chats from "../components/Chats/Chats";
-// PushAPI.initialize(signer, {options?});
-// signer - pass the signer from your app and set env to 'prod' for mainnet app
-// options? - optional, can pass initialization parameters for customization
+interface Message {
+  sender: "self" | "other";
+  content: string;
+  timestamp: number;
+  // Add any other fields you might need
+}
 const Deploy: NextPage = () => {
+  const [messageContent, setMessageContent] = useState("");
+
+  const [activeChats, setActiveChats] = useState<any[]>([]);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [userAlice, setUserAlice] = useState<any | null>(null);
+
   const [userPPP, setUserPPP] = useState<PushAPI>();
+  const [chatHistory, setChatHistory] = useState<any[]>([]); // <-- New state for chat history
   const { data: client } = useWalletClient();
+
   const initializePush = async () => {
     if (client) {
       let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
-      console.log("USerAlice", userAlice);
-      const req = await sendMessage(
-        userAlice,
-        "0x620E1cf616444d524c81841B85f60F8d3Ea64751",
-        "AVBC"
-      );
-      console.log("REQYEST", req);
-      console.log("HERE", await userAlice.chat.list("REQUESTS"));
+      setUserAlice(userAlice);
+
+      const chatList = await getChatsList(userAlice);
+      const transformedChats = chatList.map((chat) => ({
+        chatId: chat.chatId,
+        name: chat.name || "Anonymous", // default to 'Anonymous' if name is null
+        avatar: chat.profilePicture,
+      }));
+      setActiveChats(transformedChats);
+
       userAlice.stream.on(STREAM.CHAT, (data: any) => {
         console.log(data);
       });
       setUserPPP(userAlice);
     }
   };
+
   useEffect(() => {
     initializePush();
   }, [client]);
 
+  const handleChatSelection = async (chatId: string) => {
+    setSelectedChatId(chatId);
+
+    const history = await getChatHistory(userAlice, chatId);
+    const formattedHistory = history.map(convertToMessageFormat);
+
+    setChatHistory(formattedHistory);
+  };
+  const convertToMessageFormat = (msg: any): Message => ({
+    sender: msg.fromDID === userAliceDID ? "self" : "other", // This is just an example, replace `userAliceDID` with the actual DID of `userAlice`.
+    content: msg.messageObj.content,
+    timestamp: msg.timestamp,
+  });
+
+  const address = "0x0DE9fF5790C73c4b2D5CD9fA1D209C472ad44270";
+  const userAliceDID = `eip155:${address}`;
+
+  // Assuming the chatHistory is an array of messages with sender, content, avatar, etc.
+  // If not, you might need to map and transform it into the required structure.
+
   return (
     <>
-      {/* <button>ClickMe</button> */}
       <Chats
         userProfile={{
           name: "De",
@@ -46,25 +83,10 @@ const Deploy: NextPage = () => {
           role: "Seller",
           status: "Active",
         }}
-        activeConversations={[
-          // { name: "Henry Boyd", avatar: "H" },
-          { name: "Marta Curtis", avatar: "M", unreadCount: 2 },
-          // ... add more
-        ]}
-        archivedConversations={[
-          { name: "Archived User", avatar: "A" },
-          // ... add more
-        ]}
-        messages={[
-          { sender: "other", content: "Hey How are you today?", avatar: "A" },
-          {
-            sender: "self",
-            content: "Im ok what about you?",
-            avatar: "A",
-            seen: true,
-          },
-          // ... add more
-        ]}
+        activeConversations={activeChats}
+        archivedConversations={[]}
+        messages={chatHistory} // <-- Pass the chat history here
+        onChatSelect={handleChatSelection}
       />
     </>
   );
