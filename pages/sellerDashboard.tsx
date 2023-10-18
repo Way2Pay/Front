@@ -15,7 +15,6 @@ import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes";
 import { PushContext } from "./_app";
 const SellerDashBoard: NextPage = () => {
-  
   const router = useRouter();
 
   const [auth, setAuth] = useRecoilState(authState);
@@ -23,14 +22,14 @@ const SellerDashBoard: NextPage = () => {
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
   const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
   const { data: client } = useWalletClient();
-  const {userPPP,setUserPPP} = useContext(PushContext)
+  const { userPPP, setUserPPP } = useContext(PushContext);
   const handleSwitchToSellerDashboard = () => {
     router.push("/userDashboard"); // Assuming "/sellerDashboard" is the route for the seller dashboard.
   };
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
-      console.log("TOKEN",auth.accessToken)
+      console.log("TOKEN", auth.accessToken);
       if (token) {
         setAuth({
           ...auth,
@@ -83,8 +82,6 @@ const SellerDashBoard: NextPage = () => {
 
   const fetchDeployedContracts = async () => {
     try {
-      
-
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deploy`, {
         method: "GET",
         headers: {
@@ -92,10 +89,7 @@ const SellerDashBoard: NextPage = () => {
         },
       });
 
-      
-
       if (res.status === 401) {
-       
         localStorage.removeItem("accessToken");
         setAuth((prevState) => ({
           ...prevState,
@@ -104,12 +98,10 @@ const SellerDashBoard: NextPage = () => {
         router.push("/login");
         return;
       } else if (res.status === 200) {
-      
         const data = await res.json();
-      
+
         setDeployedContracts(data.contracts); // Assuming the API returns an object with a contracts key
       } else {
-        
       }
     } catch (error) {
       console.error("Error in fetchDeployedContracts:", error);
