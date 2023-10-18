@@ -119,16 +119,19 @@ const Login: NextPage = () => {
           <ConnectButton />
         </div>
 
-        {!auth.accessToken && (
-          <div className="py-5">
-            <button
-              className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
-              onClick={signInWithEthereum}
-            >
-              Sign In With Ethereum
-            </button>
-          </div>
-        )}
+        <div className="py-5">
+          <button
+            className={`py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              auth.accessToken
+                ? "bg-green-500 hover:bg-green-600 transition duration-800"
+                : "bg-gray-800 hover:bg-gray-900 transition duration-200"
+            } text-white`}
+            onClick={signInWithEthereum}
+          >
+            {auth.accessToken ? "Signed In" : "Sign In With Ethereum"}
+          </button>
+        </div>
+
         {auth.accessToken && (
           <div className="grid grid-cols-2 gap-3">
             <button
