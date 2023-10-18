@@ -22,7 +22,7 @@ import {
     SwapAndXCallParams,
     EstimateQuoteAmountArgs,
   } from "@connext/chain-abstraction/dist/types";
-import { SdkConfig, create } from "@connext/sdk";
+import { SdkBase, SdkConfig, create } from "@connext/sdk";
 import {
   tokenAddresses,
   routerAddress,
@@ -35,38 +35,19 @@ import ChainTable from "../components/ChainTable/ChainTable";
 import CoinTable from "../components/CoinTable/CoinTableUser";
 
 function DeployWelcome() {
-  const { switchNetwork } = useSwitchNetwork();
 
+  const [sdkBase, setSDKBase]=useState<SdkBase>()
   const [auth,setAuth]= useRecoilState(authState)
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
-  const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
-  const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
-  const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
-  const { openConnectModal } = useConnectModal();
   const [chainId, setChainId] = useState(1);
-  const { address, isConnecting, isDisconnected } = useAccount();
+  const { address } = useAccount();
   console.log("auth",auth)
-  const disconnectWallet = () => {
-    disconnect();
-  };
 
   useEffect(()=>{
     console.log
     if(!auth.accessToken)
     setAuth({...auth,accessToken:localStorage.getItem('accessToken')})
   },[])
-
-//   useEffect(() => {
-//     const abc = async () => {
-//       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`);
-//       console.log(await res.json())
-//     };
-//     abc();
-//   });
-
-
-  
-
 
   const chainNameToIdMap: { [key: string]: number } = {
     MATIC_MUMBAI: 80001,
@@ -78,12 +59,6 @@ function DeployWelcome() {
     isError,
     isLoading,
   } = useWalletClient({ chainId: chainId });
-  const fetchedTokens = [
-    { name: "Ethereum", price: "2000" },
-    { name: "Bitcoin", price: "40000" },
-    { name: "Cardano", price: "1.5" },
-    // ... add more tokens as needed
-  ];
 
   useEffect(() => {
     const initServices = async () => {
@@ -109,8 +84,8 @@ function DeployWelcome() {
               },
           },
         };
-        const {sdkBase} =await create(sdkConfig);
-        const poolFee = await getPoolFeeForUniV3(chainToDomainId(chainNameToIdMap[selectedChain || ""]),  "0x7af963cF6D228E564e2A0aA0DdBF06210B38615D", "0xdD69DB25F6D620A7baD3023c5d32761D353D3De9", chainIdToRPC(chainNameToIdMap[selectedChain || ""]),);
+        const {sdkBase:data} =await create(sdkConfig);
+        setSDKBase(data)
 
       }
     };
@@ -121,9 +96,6 @@ function DeployWelcome() {
   async function deployContract() {
     let abiData = require("../destabi.json");
 
-    
-    
-    console.log(poolFee);
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
     
   }
