@@ -84,8 +84,16 @@ const Login: NextPage = () => {
       console.log(data);
       client;
       if (typeof window !== undefined && client) {
-        let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
-        setUserPPP(userAlice);
+        {/*
+          try {
+            let userAlice = await PushAPI.initialize(client, {
+              env: ENV.STAGING,
+            });
+            setUserPPP(userAlice);
+          } catch (err) {
+            console.log(err);
+          }
+        */}
         console.log("updating accesstoken");
         localStorage.setItem("accessToken", data.token);
         setAuth({ ...auth, accessToken: data.token });
