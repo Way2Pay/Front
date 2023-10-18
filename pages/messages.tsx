@@ -12,25 +12,28 @@ import Chats from "../components/Chats/Chats";
 // signer - pass the signer from your app and set env to 'prod' for mainnet app
 // options? - optional, can pass initialization parameters for customization
 const Deploy: NextPage = () => {
-    const [userPPP,setUserPPP]= useState<PushAPI>();
-    const {data:client} = useWalletClient();
-    const initializePush = async () => {
-        if (client) {
-          let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
-          console.log("USerAlice",userAlice)
-          const req = await sendMessage(userAlice,"0x620E1cf616444d524c81841B85f60F8d3Ea64751","AVBC")
-          console.log("REQYEST",req)
-          console.log("HERE",await userAlice.chat.list('REQUESTS'))
-          userAlice.stream.on(STREAM.CHAT, (data: any) => {
-            console.log(data);
-          });
-          setUserPPP(userAlice);
-        }
-      };
-    useEffect(()=>{
-        initializePush();
-
-    },[client])
+  const [userPPP, setUserPPP] = useState<PushAPI>();
+  const { data: client } = useWalletClient();
+  const initializePush = async () => {
+    if (client) {
+      let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
+      console.log("USerAlice", userAlice);
+      const req = await sendMessage(
+        userAlice,
+        "0x620E1cf616444d524c81841B85f60F8d3Ea64751",
+        "AVBC"
+      );
+      console.log("REQYEST", req);
+      console.log("HERE", await userAlice.chat.list("REQUESTS"));
+      userAlice.stream.on(STREAM.CHAT, (data: any) => {
+        console.log(data);
+      });
+      setUserPPP(userAlice);
+    }
+  };
+  useEffect(() => {
+    initializePush();
+  }, [client]);
 
   return (
     <>
@@ -56,7 +59,7 @@ const Deploy: NextPage = () => {
           { sender: "other", content: "Hey How are you today?", avatar: "A" },
           {
             sender: "self",
-            content: "I'm ok what about you?",
+            content: "Im ok what about you?",
             avatar: "A",
             seen: true,
           },
