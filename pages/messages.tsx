@@ -19,7 +19,7 @@ const Deploy: NextPage = () => {
         if (client) {
           let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
           console.log("USerAlice",userAlice)
-          const req = await sendMessage(userAlice,"0x620E1cf616444d524c81841B85f60F8d3Ea64751")
+          const req = await sendMessage(userAlice,"0x620E1cf616444d524c81841B85f60F8d3Ea64751","AVBC")
           console.log("REQYEST",req)
           console.log("HERE",await userAlice.chat.list('REQUESTS'))
           userAlice.stream.on(STREAM.CHAT, (data: any) => {
