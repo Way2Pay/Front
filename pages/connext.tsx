@@ -48,7 +48,7 @@ function DeployWelcome() {
     data: client,
     isError,
     isLoading,
-  } = useWalletClient({ chainId: chainId });
+  } = useWalletClient();
 
   useEffect(() => {
     const initServices = async () => {
@@ -71,6 +71,9 @@ function DeployWelcome() {
             },
             1735353714: {
                 providers: [chainIdToRPC(domainToChainID("1735353714"))],
+              },
+              9991: {
+                providers: [chainIdToRPC(domainToChainID("9991"))],
               },
           },
         };
@@ -100,20 +103,20 @@ function DeployWelcome() {
     )?.toString();
 
     const xcallParams = {
-      origin: "9991",           // send from Goerli
-      destination: "1735353714", // to Mumbai
+      origin: "9991",           // send from Mumbai
+      destination: "1735353714", // to Goerli
       to: "0x7E0BCCea5Ab00c7aE47cDd9052a1032406950261",              // the address that should receive the funds on destination
-      asset: "0x7af963cF6D228E564e2A0aA0DdBF06210B38615D",             // address of the token contract
+      asset: "0xeDb95D8037f769B72AAab41deeC92903A98C9E16",             // address of the token contract
       delegate: address,        // address allowed to execute transaction on destination side in addition to relayers
       amount: 100,                 // amount of tokens to transfer
       slippage: 100,             // the maximum amount of slippage the user will accept in BPS (e.g. 30 = 0.3%)
-      callData: "0x",                 // empty calldata for a simple transfer (byte-encoded)
+      callData: forwardCallData,                 // empty calldata for a simple transfer (byte-encoded)
       relayerFee: relayerFee,         // fee paid to relayers 
     };
 
     const approveTxReq = await sdkBase?.approveIfNeeded(
       "9991",
-      "0x7af963cF6D228E564e2A0aA0DdBF06210B38615D",
+      "0xeDb95D8037f769B72AAab41deeC92903A98C9E16",
       "100"
     );
 
@@ -144,6 +147,7 @@ function DeployWelcome() {
     }
 
     const xcallTxReq = await sdkBase?.xcall(xcallParams)!;
+    console.log(xcallTxReq);
     xcallTxReq.gasLimit = BigNumber.from("20000000"); 
     const xcallTxReceipt = await signer?.sendTransaction(xcallTxReq);
     console.log(xcallTxReceipt);

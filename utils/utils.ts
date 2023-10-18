@@ -15,7 +15,8 @@ type DomainID = {
       137: "https://polygon.llamarpc.com",
       42161: "https://arb-mainnet-public.unifra.io",
       56: "https://bsc.rpc.blxrbdn.com",
-      5: "https://eth-goerli.g.alchemy.com/v2/demo"
+      5: "https://eth-goerli.g.alchemy.com/v2/LyWVawsBw7X86_mv5lL5h0XLm4X78n3M",
+      80001: "https://polygon-mumbai.g.alchemy.com/v2/zsLkFNYRDNwkME8dphUNn8YxC25_xbRE"
     };
   
     return chainToRPC[chainId];
@@ -29,6 +30,7 @@ type DomainID = {
       "6450786": 56,
       "6648936": 1,
       "1735353714": 5,
+      "9991": 80001,
     };
     return domainToChain[domain];
   };
@@ -41,6 +43,7 @@ type DomainID = {
       42161: "1634886255",
       56: "6450786",
       5: "1735353714",
+      80001: "9991"
     };
     return domainToChain[chainId];
   };
@@ -54,7 +57,8 @@ type DomainID = {
       42161: "arbitrum-mainnet",
       56: "bsc-mainnet",
       100: "gnosis-mainnet",
-      5: "goerli"
+      5: "goerli",
+      80001: "mumbai"
     };
     return chainIdToChainName[chainId];
   };
