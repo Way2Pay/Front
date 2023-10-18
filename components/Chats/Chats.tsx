@@ -1,5 +1,5 @@
 import { chats } from "@pushprotocol/restapi/src/lib/chat";
-import React from "react";
+import React, { useState } from "react";
 
 interface UserProfile {
   name: string;
@@ -13,6 +13,7 @@ interface ActiveConversation {
   avatar: string;
   unreadCount?: number;
   chatId: string;
+  did: string; // <-- Add this
 }
 interface Message {
   sender: "self" | "other";
@@ -27,6 +28,8 @@ interface ChatsProps {
   archivedConversations: ActiveConversation[];
   messages: Message[];
   onChatSelect: (chatId: string) => void; // Add this line
+  onSendMessage: (recipientDID: string, content: string) => void; // Add this line
+  selectedChatId: string | null;
 }
 const address = "0x0DE9fF5790C73c4b2D5CD9fA1D209C472ad44270";
 const userAliceDID = `eip155:${address}`;
@@ -37,7 +40,21 @@ const Chats: React.FC<ChatsProps> = ({
   archivedConversations,
   messages,
   onChatSelect,
+  onSendMessage,
+  selectedChatId,
 }) => {
+  const [inputMessage, setInputMessage] = useState("");
+
+  const selectedChatDID = activeConversations.find(
+    (chat) => chat.chatId === selectedChatId
+  )?.did;
+  const handleSendClick = () => {
+    if (selectedChatDID) {
+      onSendMessage(selectedChatDID, inputMessage);
+      setInputMessage("");
+    }
+  };
+
   return (
     <div className="flex h-screen antialiased text-gray-800">
       <div className="flex flex-row h-full w-full overflow-x-hidden">
@@ -166,6 +183,7 @@ const Chats: React.FC<ChatsProps> = ({
                   <input
                     type="text"
                     className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
+                    onChange={(e) => setInputMessage(e.target.value)}
                   />
                   <button className="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600">
                     <svg
@@ -186,7 +204,10 @@ const Chats: React.FC<ChatsProps> = ({
                 </div>
               </div>
               <div className="ml-4">
-                <button className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
+                <button
+                  onClick={handleSendClick}
+                  className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
+                >
                   <span>Send</span>
                   <span className="ml-2">
                     <svg
