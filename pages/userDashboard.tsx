@@ -27,9 +27,8 @@ const UserDashBoard: NextPage = () => {
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
   const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
   const { data: client } = useWalletClient();
-  const {userPPP, setUserPPP} = useContext(PushContext)
+  const { userPPP, setUserPPP } = useContext(PushContext);
 
- 
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
@@ -128,6 +127,9 @@ const UserDashBoard: NextPage = () => {
   const handleCloseModal = () => {
     setSelectedTransaction(null);
   };
+  const handleNavigateToMessages = () => {
+    router.push("/messages");
+  };
 
   return (
     <>
@@ -156,6 +158,21 @@ const UserDashBoard: NextPage = () => {
           onClose={handleCloseModal}
         />
       )}
+      <div className="fixed bottom-4 right-4 flex space-x-4">
+        <img
+          src="chat.png" // Replace with the actual path to your PNG image
+          alt="Navigate to Messages" // Add a descriptive alt text for accessibility
+          onClick={handleNavigateToMessages}
+          className="cursor-pointer hover:opacity-80 transition duration-200 h-8" // Added some styling for a hover effect
+        />
+
+        <img
+          src="notification.png" // Replace with the actual path to your PNG image
+          alt="Navigate to Messages" // Add a descriptive alt text for accessibility
+          onClick={handleNavigateToMessages}
+          className="cursor-pointer hover:opacity-80 transition duration-200 h-8" // Added some styling for a hover effect
+        />
+      </div>
     </>
   );
 };

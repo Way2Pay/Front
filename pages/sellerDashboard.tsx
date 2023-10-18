@@ -118,18 +118,24 @@ const SellerDashBoard: NextPage = () => {
   const handleCloseModal = () => {
     setSelectedTransaction(null);
   };
+  const handleNavigateToMessages = () => {
+    router.push("/messages");
+  };
 
   return (
     <>
       <Navbar />
       <div className="flex justify-center my-4">
-        <button
-          onClick={handleSwitchToSellerDashboard}
-          className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
-        >
-          Switch to User Dashboard
-        </button>
+        <div className="grid grid-cols-1 gap-4 items-center">
+          <button
+            onClick={handleSwitchToSellerDashboard}
+            className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+          >
+            Switch to User Dashboard
+          </button>
+        </div>
       </div>
+
       {hasFetchedTransactions && transactions.length > 0 && (
         <div>
           <Coins mode="earned" />
@@ -147,6 +153,21 @@ const SellerDashBoard: NextPage = () => {
           onClose={handleCloseModal}
         />
       )}
+      <div className="fixed bottom-4 right-4 flex space-x-4">
+        <img
+          src="chat.png" // Replace with the actual path to your PNG image
+          alt="Navigate to Messages" // Add a descriptive alt text for accessibility
+          onClick={handleNavigateToMessages}
+          className="cursor-pointer hover:opacity-80 transition duration-200 h-8" // Added some styling for a hover effect
+        />
+
+        <img
+          src="notification.png" // Replace with the actual path to your PNG image
+          alt="Navigate to Messages" // Add a descriptive alt text for accessibility
+          onClick={handleNavigateToMessages}
+          className="cursor-pointer hover:opacity-80 transition duration-200 h-8" // Added some styling for a hover effect
+        />
+      </div>
     </>
   );
 };
