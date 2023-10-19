@@ -82,7 +82,8 @@ const Login: NextPage = () => {
       console.log(data);
       client;
       if (typeof window !== undefined && client) {
-        {/*
+        {
+          /*
           try {
             let userAlice = await PushAPI.initialize(client, {
               env: ENV.STAGING,
@@ -91,7 +92,8 @@ const Login: NextPage = () => {
           } catch (err) {
             console.log(err);
           }
-        */}
+        */
+        }
         console.log("updating accesstoken");
         localStorage.setItem("accessToken", data.token);
         setAuth({ ...auth, accessToken: data.token });
@@ -131,7 +133,7 @@ const Login: NextPage = () => {
         </div>
 
         {auth.accessToken && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <button
               className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
               onClick={() => router.push("/sellerDashboard")}
@@ -143,6 +145,12 @@ const Login: NextPage = () => {
               onClick={() => router.push("/userDashboard")}
             >
               Go to User Dashboard
+            </button>
+            <button
+              className="bg-gray-800 text-white py-2 px-6 rounded-lg hover:bg-gray-900 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+              onClick={() => router.push("/userProfile")}
+            >
+              Go to User Profile
             </button>
           </div>
         )}
