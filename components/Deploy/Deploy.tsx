@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { authState } from "../../state/atoms";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { disconnect } from "@wagmi/core";
 import dynamic from "next/dynamic";
 import { useSwitchNetwork } from "wagmi";
@@ -17,9 +17,10 @@ import { motion } from "framer-motion";
 import { slideRight, slideUp } from "../../context/motionpresets";
 import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTableUser";
+import { getContractAddress } from "viem";
 function DeployWelcome() {
   const { switchNetwork } = useSwitchNetwork();
-
+  
   const [auth,setAuth]= useRecoilState(authState)
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
@@ -27,6 +28,7 @@ function DeployWelcome() {
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
   const { openConnectModal } = useConnectModal();
   const [chainId, setChainId] = useState(1);
+  const publicClient = usePublicClient({chainId:chainId});
   const { address, isConnecting, isDisconnected } = useAccount();
   console.log("auth",auth)
   const disconnectWallet = () => {
@@ -110,7 +112,7 @@ function DeployWelcome() {
     data: client,
     isError,
     isLoading,
-  } = useWalletClient({ chainId: chainId });
+  } = useWalletClient();
   const fetchedTokens = [
     { name: "Ethereum", price: "2000" },
     { name: "Bitcoin", price: "40000" },
@@ -133,7 +135,25 @@ function DeployWelcome() {
           "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         ],
       });
-      console.log(a);
+      if(!a)
+      return;
+      const receipt = await publicClient.waitForTransactionReceipt({hash:a})
+      console.log("RECEIPT",receipt)
+      if(!address)
+      return 
+      const nonce = await publicClient.getTransactionCount({address:address})
+      const b = BigInt(nonce-1)
+      const contractAddress= await getContractAddress({from:address,nonce:b})
+      
+      console.log("Address",contractAddress)
+      const request = await fetch(process.env.NEXT_PUBLIC_API_URL+"/deploy",{
+        method:"POST",
+        headers:{
+          "Authorization": `Bearer ${auth.accessToken}`
+        },
+        body:JSON.stringify({chainId:chainId,coinAddress:selectedCoin,contractAddress:contractAddress})
+      })
+      console.log(await request.json())
     } catch (err: unknown) {}
   }
   const { heading, subheading } = getHeadingText();

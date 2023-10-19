@@ -1,4 +1,3 @@
-import { generateNonce, SiweMessage } from "siwe";
 import clientPromise from "../../../db/database";
 
 export default async function handler(request, response) {
@@ -6,14 +5,8 @@ export default async function handler(request, response) {
   const { address } = request.query;
   console.log(address);
   const db = client.db("PayDB");
-  const nonce = generateNonce();
-  const myquery = { address: address };
-  console.log("YES");
-  var newvalues = { $set: { nonce: nonce } };
-
-  var abc = db
-    .collection("Users")
-    .find(myquery)
+  db.collection("Users")
+    .find({ address: address })
     .toArray((err, res) => {
       if (err) throw err;
 
@@ -22,16 +15,12 @@ export default async function handler(request, response) {
           { address: address, nonce: nonce },
           (err, res) => {
             if (err) throw err;
-            console.log("Inserted",res.insertedId)
+            console.log("Inserted", res.insertedId);
           }
         );
       } else {
-        db.collection("Users").updateOne(myquery, newvalues, (err, res) => {
-          if (err) throw err;
-        });
+        console.log("HERE", res[0]);
+        return response.status(200).json({ nonce: res[0].nonce });
       }
     });
-  console.log("abc", abc);
-
-  return response.status(200).json({ nonce: nonce });
 }

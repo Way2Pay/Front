@@ -7,13 +7,13 @@ import { slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { disconnect } from "@wagmi/core";
-
+import {useConnext} from "../../hooks/useConnext"
 import CoinTable from "../CoinTable/CoinTable";
 
 const RedirectWelcome: NextPage = () => {
   const { chain } = useNetwork();
   const [fetchedTokens, setFetchedTokens] = useState<Coin[]>([]);
-
+  const {sendConnext} = useConnext();
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
