@@ -1,31 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { authState } from "../state/atoms";
-import { useAccount, useWalletClient } from "wagmi";
-import dynamic from "next/dynamic";
+import { useAccount, useNetwork, useWalletClient } from "wagmi";
 import { BigNumber, ethers } from "ethers";
-import { chainIdToRPC, domainToChainID } from "../utils/utils";
-import { SdkBase, SdkConfig, SdkUtils, create } from "@connext/sdk";
+import { chainIdToRPC, domainToChainID, chainToDomainId } from "../utils/utils";
+import { SdkBase, SdkConfig, create } from "@connext/sdk";
 import "../destabi.json";
 import { WalletClient } from "viem";
 
-function DeployWelcome() {
+export const useConnext = () => {
   const [sdkBase, setSDKBase] = useState<SdkBase>();
   const [auth, setAuth] = useRecoilState(authState);
+  const { chain } = useNetwork();
   const { address } = useAccount();
-  console.log("auth", auth);
 
   useEffect(() => {
     console.log;
     if (!auth.accessToken)
       setAuth({ ...auth, accessToken: localStorage.getItem("accessToken") });
   }, []);
-
-  const chainNameToIdMap: { [key: string]: number } = {
-    MATIC_MUMBAI: 80001,
-    ETH_GOERLI: 5,
-    // ... add other chains as necessary
-  };
   const { data: client, isError, isLoading } = useWalletClient();
 
   useEffect(() => {
@@ -63,38 +56,44 @@ function DeployWelcome() {
     initServices();
   }, [client]);
 
-  async function deployContract() {
+  async function sendConnext(
+    token: string,
+    txId: string,
+    destination: number,
+    toAddress: string
+  ) {
     let abiData = require("../destabi.json");
     const poolFee = 3000;
 
     const forwardCallData = ethers.utils.defaultAbiCoder.encode(
-      ["address"],
-      ["0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"]
+      ["address", "string"],
+      [token, txId]
     );
 
+    if (!chain) return;
     const relayerFee = (
       await sdkBase?.estimateRelayerFee({
-        originDomain: "9991",
-        destinationDomain: "1735353714",
+        originDomain: chainToDomainId(chain.id),
+        destinationDomain: chainToDomainId(destination),
       })
     )?.toString();
 
     const xcallParams = {
-      origin: "9991", // send from Mumbai
-      destination: "1735353714", // to Goerli
-      to: "0x7E0BCCea5Ab00c7aE47cDd9052a1032406950261", // the address that should receive the funds on destination
-      asset: "0xeDb95D8037f769B72AAab41deeC92903A98C9E16", // address of the token contract
+      origin: chainToDomainId(chain.id), // send from Mumbai
+      destination: chainToDomainId(destination), // to Goerli
+      to: toAddress, // the address that should receive the funds on destination
+      asset: token, // address of the token contract
       delegate: address, // address allowed to execute transaction on destination side in addition to relayers
       amount: 100, // amount of tokens to transfer
-      slippage: 100, // the maximum amount of slippage the user will accept in BPS (e.g. 30 = 0.3%)
+      slippage: 500, // the maximum amount of slippage the user will accept in BPS (e.g. 30 = 0.3%)
       callData: forwardCallData, // empty calldata for a simple transfer (byte-encoded)
       relayerFee: relayerFee, // fee paid to relayers
     };
 
     const approveTxReq = await sdkBase?.approveIfNeeded(
-      "9991",
-      "0xeDb95D8037f769B72AAab41deeC92903A98C9E16",
-      "100"
+      chainToDomainId(chain.id),
+      token,
+      "1000"
     );
 
     function walletClientToSigner(walletClient: WalletClient) {
@@ -128,17 +127,5 @@ function DeployWelcome() {
     await xcallTxReceipt?.wait();
   }
 
-  return (
-    <div>
-      <button
-        onClick={() => {
-          deployContract();
-        }}
-      >
-        ClickMe
-      </button>
-    </div>
-  );
-}
-
-export default dynamic(() => Promise.resolve(DeployWelcome), { ssr: false });
+  return { sendConnext };
+};

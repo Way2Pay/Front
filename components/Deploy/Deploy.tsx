@@ -138,8 +138,7 @@ function DeployWelcome() {
       if(!a)
       return;
       const receipt = await publicClient.waitForTransactionReceipt({hash:a})
-      console.log(receipt)
-      console.log(receipt)
+      console.log("RECEIPT",receipt)
       if(!address)
       return 
       const nonce = await publicClient.getTransactionCount({address:address})

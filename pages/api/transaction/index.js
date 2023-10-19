@@ -26,8 +26,8 @@ export default async function handler(request, response) {
       return response.status(200).json({transactions:res})
     })
   } else if (request.method === "POST") {
-    const { address, amount, buyer } = request.body;
-    console.log("YES");
+    const timestamp = Math.floor(Date.now()/1000);
+    const { address, amount, chainId } = request.body;
     let myquery = { address: address };
     var id;
     var abc = await db
@@ -42,7 +42,7 @@ export default async function handler(request, response) {
           await db
             .collection("Transactions")
             .insertOne(
-              { address: address, amount: amount, buyer: buyer },
+              { address: address, amount: amount, status: "initiated", createTime:timestamp,chainId:chainId },
               async (err, res) => {
                 if (err) throw err;
                 console.log("HERE", res.insertedId);
