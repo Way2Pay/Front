@@ -25,21 +25,22 @@ export default async function handler(request, response) {
         return response.status(200).json({ deployements: res });
       });
   } else if (request.method === "POST") {
-    const { chainId, coinAddress,contractAddress } = request.body;
+    const { chainId, coinAddress,contractAddress } = JSON.parse(request.body);
+    console.log(request.body)
    await db.collection("Users")
       .find({ _id: userId })
       .toArray(async (err, res) => {
         if (err) throw err;
-        await db.collections("Deployements").insertOne({ owner:address,chainId:chainId,coin:coinAddress,contract:contractAddress },async(err,res)=>{
+        await db.collection("Deployements").insertOne({ owner:address,chainId:chainId,coin:coinAddress,contract:contractAddress },async(err,res)=>{
             if(err)throw err
 
             const id=res.insertedId
-            await db.collections("Users").updateOne(
+            await db.collection("Users").updateOne(
                 { _id: userId },
                 { $push: { deployements: id } },
                 (err, res) => {
                   if (err) throw err;
-                  return result.status(200).json({message:"Deployement Added"});
+                  return response.status(200).json({message:"Deployement Added"});
                 }
               );
         })
