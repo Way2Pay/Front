@@ -83,7 +83,6 @@ export const useConnext = () => {
       destination: chainToDomainId(destination), // to Goerli
       to: toAddress, // the address that should receive the funds on destination
       asset: token, // address of the token contract
-      delegate: address, // address allowed to execute transaction on destination side in addition to relayers
       amount: 100, // amount of tokens to transfer
       slippage: 500, // the maximum amount of slippage the user will accept in BPS (e.g. 30 = 0.3%)
       callData: forwardCallData, // empty calldata for a simple transfer (byte-encoded)
