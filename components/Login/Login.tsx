@@ -20,8 +20,6 @@ const Login: NextPage = () => {
   const { address, isConnected, isDisconnected } = useAccount();
   const { data, signMessageAsync } = useSignMessage();
   const nonce = generateNonce();
-
-  console.log(auth);
   const [domain, setDomain] = useState("");
   const [origin, setOrigin] = useState("");
   useEffect(() => {

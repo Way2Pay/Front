@@ -22,8 +22,8 @@ export default async function handler(request, response) {
         return response.status(200).json({data:res})
     })
   } else if (request.method === "POST") {
-    const {nickName}=JSON.parse(request.body)
-    db.collection("Users").updateOne({address:address},(err,res)=>{
+    const {nickname, desc}=JSON.parse(request.body)
+    db.collection("Users").updateOne({address:address},{$set :{nickname:nickname,desc:desc}},(err,res)=>{
         if(err)throw err;
         return response.status(200).json({message:"Updated profile"})
     })
