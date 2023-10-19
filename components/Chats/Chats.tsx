@@ -31,8 +31,6 @@ interface ChatsProps {
   onSendMessage: (recipientDID: string, content: string) => void; // Add this line
   selectedChatId: string | null;
 }
-const address = "0x0DE9fF5790C73c4b2D5CD9fA1D209C472ad44270";
-const userAliceDID = `eip155:${address}`;
 
 const Chats: React.FC<ChatsProps> = ({
   userProfile,
@@ -50,6 +48,7 @@ const Chats: React.FC<ChatsProps> = ({
   )?.did;
   const handleSendClick = () => {
     if (selectedChatDID) {
+      console.log("HERE",selectedChatDID,inputMessage)
       onSendMessage(selectedChatDID, inputMessage);
       setInputMessage("");
     }

@@ -22,6 +22,11 @@ export const sendNotification = async (
   return sendNotifRes;
 };
 
+export const acceptRequest = async (userObject:PushAPI, recepient:string)=>{
+  const data = await userObject.chat.accept(recepient)
+  return data;
+}
+
 export const subscribeChannel = async (
   userObject: PushAPI,
   channel: string
@@ -41,7 +46,14 @@ export const getChatsList = async (userObject: PushAPI) => {
   return userChats;
 };
 
-
+export const updateUserInfo = async (userObject:PushAPI, imageUrl:string|undefined, name:string|undefined, description:string|undefined) => {
+  const updateRequest = await userObject.profile.update({
+    picture:imageUrl,
+    name:name,
+    desc:description,
+  })
+  return updateRequest;
+}
 
 export const getRequestsList = async (userObject: PushAPI) => {
   const userChats = await userObject.chat.list("REQUESTS");
