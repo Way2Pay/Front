@@ -25,7 +25,7 @@ export default async function handler(request, response) {
         return response.status(200).json({ deployements: res });
       });
   } else if (request.method === "POST") {
-    const { chainId, coinAddress,contractAddress } = JSON.parse(request.body);
+    const { chainId, coinAddress,contractAddress } = request.body;
     console.log(request.body)
    await db.collection("Users")
       .find({ _id: userId })

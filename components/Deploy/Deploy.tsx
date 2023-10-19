@@ -149,6 +149,7 @@ function DeployWelcome() {
       const request = await fetch(process.env.NEXT_PUBLIC_API_URL+"/deploy",{
         method:"POST",
         headers:{
+          "Content-Type": "application/json",
           "Authorization": `Bearer ${auth.accessToken}`
         },
         body:JSON.stringify({chainId:chainId,coinAddress:selectedCoin,contractAddress:contractAddress})
