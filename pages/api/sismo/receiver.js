@@ -3,7 +3,7 @@ import {
   SismoConnectVerifiedResult,
   AuthType,
 } from "@sismo-core/sismo-connect-server";
-
+import clientPromise from "../../../db/database";
 const config = {
   // you will need to register an appId in the Factory
   appId: "0x8ae737c8145f11c60b23ee69fab93711",
@@ -30,15 +30,18 @@ async function verifyResponse(sismoConnectResponse) {
 export default async function handler(request, response) {
   if (request.method === "OPTIONS") return response.status(200).body({ OK });
   else if (request.method === "POST") {
-    const data = await JSON.parse(request.body);
+    const {data,userAddress} = await JSON.parse(request.body);
     console.log("Data",data)
     try{
     await verifyResponse(data);
     }catch(err){
         return response.status(401).json({message:"Bad Request"})
     }
-    return response.status(200).json({
-      message: "received",
-    });
+    const client = clientPromise();
+    const db = client.db("PayDB")
+    await db.collection("Users").updateOne({address:userAddress},{$set:{membership:true}},(err,res)=>{
+      if(err)throw err
+      return response.status(200).json({message:"Membership Verified"})
+    })
   }
 }
