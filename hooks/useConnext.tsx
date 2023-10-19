@@ -66,8 +66,8 @@ export const useConnext = () => {
     const poolFee = 3000;
 
     const forwardCallData = ethers.utils.defaultAbiCoder.encode(
-      ["address", "string"],
-      [token, txId]
+      [ "string"],
+      [ txId]
     );
 
     if (!chain) return;
