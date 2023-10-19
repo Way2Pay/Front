@@ -1,7 +1,8 @@
 import { atom } from "recoil";
-
+import { PushAPI } from "@pushprotocol/restapi"
 export const initialAuthState = {
   accessToken:null,
+  pushObject:null,
 }
 export const authState = atom({
   key: 'authState', // unique ID (with respect to other atoms/selectors)
@@ -10,4 +11,5 @@ export const authState = atom({
 
   export type AuthAtomState={
     accessToken:string|null
+    pushObject: PushAPI|null
   }
