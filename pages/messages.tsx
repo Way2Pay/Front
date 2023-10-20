@@ -18,6 +18,7 @@ import {
   acceptRequest,
 } from "../frontend-services/pushServices";
 import Chats from "../components/Chats/Chats";
+import Navbar from "../components/HomePage/Navbar";
 interface Message {
   sender: "self" | "other";
   content: string;
@@ -117,6 +118,7 @@ const Deploy: NextPage = () => {
 
   return (
     <>
+      <Navbar />
       <Chats
         userProfile={{
           name: "De",
