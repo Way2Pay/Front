@@ -29,10 +29,10 @@ const CoinTableUser: React.FC<CoinTableProps> = ({
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
-                Coin
+                Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Price
+                Symbol
               </th>
             </tr>
           </thead>
@@ -43,10 +43,10 @@ const CoinTableUser: React.FC<CoinTableProps> = ({
                 className={`border-b ${
                   selectedCoin === token.name ? "bg-blue-100" : "bg-white"
                 }`}
-                onClick={() => setSelectedCoin(token.name)}
+                onClick={() => setSelectedCoin(token.address)}
               >
-                <td className="px-6 py-4">{token.name}</td>
                 <td className="px-6 py-4">{token.symbol}</td>
+                <td className="px-6 py-4">{token.name}</td>
               </tr>
             ))}
           </tbody>
