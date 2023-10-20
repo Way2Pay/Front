@@ -14,7 +14,7 @@ export default async function handler(request, response) {
 
   if (!validity.authorized)
     return response.status(401).json({ message: validity.message });
-  const { _id: userId, address = address } = validity.payload;
+  const { _id: userId, address } = validity.payload;
 
   if (request.method === "GET") {
     db.collection("Deployements")
