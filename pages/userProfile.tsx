@@ -73,8 +73,8 @@ const UserProfile: React.FC = () => {
       nickname: nickname,
       desc: description,
     };
-    let data = updateUserInfo(userPPP, undefined, nickname, description);
-
+    let data = await updateUserInfo(userPPP, undefined, nickname, description);
+    fetchUserData(userPPP)
     setEditing(false); // Hide the editing form
     // Reload the data after successfully updating
   };
