@@ -5,7 +5,7 @@ import {
   verifyToken,
 } from "../../../backend-services/auth";
 export default async function handler(request, response) {
-  if (request.method === "OPTIONS") return response.status(200).headers({"Access-Control-Allow-Origin": "*"}).send("ok");
+  if (request.method === "OPTIONS") return response.status(200).send("ok");
 
   const client = await clientPromise;
   const db = client.db("PayDB");
