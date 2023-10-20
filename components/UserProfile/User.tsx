@@ -4,12 +4,10 @@ import React, { useState } from "react";
 const User: React.FC<{
   onNicknameChange: (nickname: string) => void;
   onDescriptionChange: (description: string) => void;
-  onSave: (nickname: string, description: string) => void;
+  onSave: () => void;
 }> = ({ onNicknameChange, onDescriptionChange, onSave }) => {
-  const [nickname, setNickname] = useState("");
-  const [description, setDescription] = useState("");
   const handleSaveClick = () => {
-    onSave(nickname, description);
+    onSave();
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

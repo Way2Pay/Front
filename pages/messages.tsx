@@ -1,6 +1,6 @@
 "use client";
 import { NextPage } from "next";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import DeployWelcome from "../components/Deploy/Deploy";
 import { PushAPI } from "@pushprotocol/restapi";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
@@ -19,6 +19,7 @@ import {
 } from "../frontend-services/pushServices";
 import Chats from "../components/Chats/Chats";
 import Navbar from "../components/HomePage/Navbar";
+import { PushContext } from "./_app";
 interface Message {
   sender: "self" | "other";
   content: string;
@@ -33,17 +34,14 @@ const Deploy: NextPage = () => {
 
   const [activeChats, setActiveChats] = useState<any[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-  const [userAlice, setUserAlice] = useState<any | null>(null);
 
-  const [userPPP, setUserPPP] = useState<PushAPI>();
+  const {userPPP,setUserPPP}= useContext(PushContext)
   const [chatHistory, setChatHistory] = useState<any[]>([]); // <-- New state for chat history
   const { data: client } = useWalletClient();
 
   const initializePush = async () => {
     if (client) {
       let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
-      setUserAlice(userAlice);
-
       const chatList = await getChatsList(userAlice);
       console.log(chatList);
       const transformedChats = chatList.map((chat) => ({
@@ -84,7 +82,7 @@ const Deploy: NextPage = () => {
     // Then set up an interval to fetch every 10 seconds
   };
   const fetchChatHistory = async (chatId: string) => {
-    const history = await getChatHistory(userAlice, chatId);
+    const history = await getChatHistory(userPPP, chatId);
     const formattedHistory = history.map(convertToMessageFormat).reverse();
     setChatHistory(formattedHistory);
     console.log(formattedHistory);
@@ -96,7 +94,7 @@ const Deploy: NextPage = () => {
   });
   const handleSendMessage = async (recipientDID: string, content: string) => {
     try {
-      const response = await sendMessage(userAlice, recipientDID, content);
+      const response = await sendMessage(userPPP, recipientDID, content);
       console.log("Message sent successfully!", response);
       const newMessage: Message = {
         sender: "self",

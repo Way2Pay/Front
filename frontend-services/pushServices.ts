@@ -54,6 +54,10 @@ export const updateUserInfo = async (userObject:PushAPI, imageUrl:string|undefin
   })
   return updateRequest;
 }
+export const getUserInfo = async (userObject:PushAPI) => {
+  const info = await userObject.profile.info();
+  return info;
+}
 
 export const getRequestsList = async (userObject: PushAPI) => {
   const userChats = await userObject.chat.list("REQUESTS");
