@@ -46,11 +46,16 @@ const Chats: React.FC<ChatsProps> = ({
   const selectedChatDID = activeConversations.find(
     (chat) => chat.chatId === selectedChatId
   )?.did;
+
   const handleSendClick = () => {
     if (selectedChatDID) {
-      console.log("HERE",selectedChatDID,inputMessage)
-      onSendMessage(selectedChatDID, inputMessage);
-      setInputMessage("");
+      console.log("HERE", selectedChatDID, inputMessage);
+      if (inputMessage) {
+        onSendMessage(selectedChatDID, inputMessage);
+        setInputMessage("");
+      } else {
+        alert("input message is empty");
+      }
     }
   };
 
@@ -180,6 +185,7 @@ const Chats: React.FC<ChatsProps> = ({
               <div className="flex-grow ml-4">
                 <div className="relative w-full">
                   <input
+                    value={inputMessage}
                     type="text"
                     className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
                     onChange={(e) => setInputMessage(e.target.value)}

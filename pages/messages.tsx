@@ -5,7 +5,11 @@ import DeployWelcome from "../components/Deploy/Deploy";
 import { PushAPI } from "@pushprotocol/restapi";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { useAccount, useWalletClient } from "wagmi";
+import { useRecoilState } from "recoil";
+import { authState } from "../state/atoms";
 import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes";
+import { useRouter } from "next/router";
+
 import {
   sendMessage,
   getChatHistory,
@@ -14,6 +18,7 @@ import {
   acceptRequest,
 } from "../frontend-services/pushServices";
 import Chats from "../components/Chats/Chats";
+import Navbar from "../components/HomePage/Navbar";
 interface Message {
   sender: "self" | "other";
   content: string;
@@ -23,8 +28,9 @@ interface Message {
 const Deploy: NextPage = () => {
   const [messageContent, setMessageContent] = useState("");
   const [selectedChatDID, setSelectedChatDID] = useState<string | null>(null);
+  const [auth, setAuth] = useRecoilState(authState);
+  const router = useRouter();
 
-  
   const [activeChats, setActiveChats] = useState<any[]>([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [userAlice, setUserAlice] = useState<any | null>(null);
@@ -47,10 +53,9 @@ const Deploy: NextPage = () => {
         did: chat.did,
       }));
       setActiveChats(transformedChats);
-      const requests = await getRequestsList(userAlice)
+      const requests = await getRequestsList(userAlice);
       userAlice.stream.on(STREAM.CHAT, (data: any) => {
-        if(selectedChatId)
-        fetchChatHistory(selectedChatId);
+        if (selectedChatId) fetchChatHistory(selectedChatId);
       });
       setUserPPP(userAlice);
     }
@@ -73,19 +78,17 @@ const Deploy: NextPage = () => {
       clearInterval(chatHistoryInterval);
     }
 
-    
-
     // Fetch immediately
     await fetchChatHistory(chatId);
 
     // Then set up an interval to fetch every 10 seconds
   };
-const fetchChatHistory = async (chatId:string) => {
-      const history = await getChatHistory(userAlice, chatId);
-      const formattedHistory = history.map(convertToMessageFormat).reverse();
-      setChatHistory(formattedHistory);
-      console.log(formattedHistory);
-    };
+  const fetchChatHistory = async (chatId: string) => {
+    const history = await getChatHistory(userAlice, chatId);
+    const formattedHistory = history.map(convertToMessageFormat).reverse();
+    setChatHistory(formattedHistory);
+    console.log(formattedHistory);
+  };
   const convertToMessageFormat = (msg: any): Message => ({
     sender: msg.fromDID === userAliceDID ? "self" : "other", // This is just an example, replace `userAliceDID` with the actual DID of `userAlice`.
     content: msg.messageObj.content,
@@ -107,7 +110,7 @@ const fetchChatHistory = async (chatId:string) => {
     }
   };
 
-  const {address} = useAccount();
+  const { address } = useAccount();
   const userAliceDID = `eip155:${address}`;
 
   // Assuming the chatHistory is an array of messages with sender, content, avatar, etc.
@@ -115,6 +118,7 @@ const fetchChatHistory = async (chatId:string) => {
 
   return (
     <>
+      <Navbar />
       <Chats
         userProfile={{
           name: "De",

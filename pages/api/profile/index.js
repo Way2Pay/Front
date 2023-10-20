@@ -15,17 +15,23 @@ export default async function handler(request, response) {
   if (!validity.authorized)
     return response.status(401).json({ message: validity.message });
   console.log(validity);
-  const {address} = validity.payload
+  const { address } = validity.payload;
   if (request.method === "GET") {
-    db.collection("Users").find({address:address},(err,res)=>{
-        if(err)throw err;
-        return response.status(200).json({data:res})
-    })
+    db.collection("Users")
+      .find({ address: address })
+      .toArray((err, results) => {
+        if (err) throw err;
+        return response.status(200).json({ data: results });
+      });
   } else if (request.method === "POST") {
-    const {nickname, desc}=request.body
-    db.collection("Users").updateOne({address:address},{$set :{nickname:nickname,desc:desc}},(err,res)=>{
-        if(err)throw err;
-        return response.status(200).json({message:"Updated profile"})
-    })
+    const { nickname, desc } = request.body;
+    db.collection("Users").updateOne(
+      { address: address },
+      { $set: { nickname: nickname, desc: desc } },
+      (err, res) => {
+        if (err) throw err;
+        return response.status(200).json({ message: "Updated profile" });
+      }
+    );
   } else return response.status(403).json({ message: "Forbidden Method" });
 }

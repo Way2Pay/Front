@@ -2,33 +2,37 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authState, initialAuthState } from "../../state/atoms";
 import { useRecoilState } from "recoil";
-const Navbar: React.FC = () => {
+import Link from "next/link";
 
-  const [auth,setAuth]= useRecoilState(authState)
+const Navbar: React.FC = () => {
+  const [auth, setAuth] = useRecoilState(authState);
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const [isLogged,setIsLogged]=useState(false)
-  useEffect(()=>{
-    if(localStorage.getItem('accessToken')?.length!==0||auth.accessToken)
-   { 
-    setIsLogged(true);}
-  },[])
-  const handleClick=()=>{
-    if(isLogged)
-    {
-      localStorage.setItem('accessToken',"")
-      setAuth(initialAuthState)
-      router.push('')
+  const [isLogged, setIsLogged] = useState(false);
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")?.length !== 0 || auth.accessToken) {
+      setIsLogged(true);
     }
-    else
-    router.push('/login')
-  }
+  }, []);
+  const handleClick = () => {
+    if (isLogged) {
+      localStorage.setItem("accessToken", "");
+      setAuth(initialAuthState);
+      router.push("");
+    } else router.push("/login");
+  };
   return (
     <div className="w-full mx-auto bg-white border-b 2xl:max-w-7xl">
       <div className="relative flex flex-col w-full p-5 mx-auto bg-white md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
         <div className="flex flex-row items-center justify-between lg:justify-start">
-          <img src="icon.png" className="w-20" />
+          <Link href="/">
+            <img
+              src="icon.png"
+              className="w-20 cursor-pointer"
+              alt="Home Icon"
+            />
+          </Link>{" "}
           <button
             onClick={() => setOpen(!open)}
             className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-black focus:outline-none focus:text-black md:hidden"
@@ -58,34 +62,42 @@ const Navbar: React.FC = () => {
           </button>
         </div>
         <nav
-          className={`flex-col items-center flex-grow md:pb-0 md:flex md:justify-end md:flex-row ${
+          className={`flex-col items-center flex-grow md:pb-0 md:flex md:justify-center md:flex-row gap-5 ${
             open ? "flex" : "hidden"
           }`}
         >
           {/* Add other nav links as needed */}
-          <a
-            href="#"
+          <Link
+            href="/deploy"
             className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600"
           >
-            About
-          </a>
-          <a
-            href="#"
+            Deploy
+          </Link>
+          <Link
+            href="/userDashboard"
             className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600"
           >
-            Contact
-          </a>
-          <a
-            href="#"
+            User Dashboard
+          </Link>
+          <Link
+            href="/sellerDashboard"
             className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600"
           >
-            Documentation
-          </a>
+            Seller Dashboard
+          </Link>
 
           <div className="inline-flex items-center gap-2 list-none lg:ml-auto">
-            <button onClick={()=>{handleClick()}} className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline">
-              {isLogged?"Sign Out":"Sign in"}
+            <button
+              onClick={() => {
+                handleClick();
+              }}
+              className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline"
+            >
+              {isLogged ? "Sign Out" : "Sign in"}
             </button>
+            <Link href="/userProfile">
+              <img src="Profile.svg" className="w-12 cursor-pointer" />
+            </Link>{" "}
           </div>
         </nav>
       </div>
