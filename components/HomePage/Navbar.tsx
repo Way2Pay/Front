@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
           </button>
         </div>
         <nav
-          className={`flex-col items-center flex-grow md:pb-0 md:flex md:justify-center md:flex-row gap-5 ${
+          className={`flex-col items-center flex-grow md:pb-0 md:flex md:justify-center md:flex-row gap-5 md:ml-44 lg:ml-44 ${
             open ? "flex" : "hidden"
           }`}
         >
@@ -96,8 +96,8 @@ const Navbar: React.FC = () => {
               {isLogged ? "Sign Out" : "Sign in"}
             </button>
             <Link href="/userProfile">
-              <img src="Profile.svg" className="w-12 cursor-pointer" />
-            </Link>{" "}
+              <img src="Profile.png" className="w-12 cursor-pointer" />
+            </Link>
           </div>
         </nav>
       </div>
