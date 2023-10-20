@@ -2,7 +2,7 @@ import clientPromise from "../../../db/database";
 import { getAuthToken, verifyToken } from "../../../backend-services/auth";
 import { ObjectId } from "mongodb";
 export default async function handler(request, response) {
-  if (request.method === "OPTIONS") return response.status(200).headers({"Access-Control-Allow-Origin": "*"}).body({OK});
+  if (request.method === "OPTIONS") return response.status(200).headers({"Access-Control-Allow-Origin": "*"}).send("ok");
   const client = await clientPromise;
   const db = client.db("PayDB");
   const { transactionId } = request.query;
