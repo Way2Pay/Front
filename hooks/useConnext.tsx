@@ -60,7 +60,8 @@ export const useConnext = () => {
     token: string,
     txId: string,
     destination: number,
-    toAddress: string
+    toAddress: string,
+    amount:number,
   ) {
     let abiData = require("../destabi.json");
     const poolFee = 3000;
@@ -83,7 +84,7 @@ export const useConnext = () => {
       destination: chainToDomainId(destination), // to Goerli
       to: toAddress, // the address that should receive the funds on destination
       asset: token, // address of the token contract
-      amount: 100, // amount of tokens to transfer
+      amount: amount, // amount of tokens to transfer
       slippage: 500, // the maximum amount of slippage the user will accept in BPS (e.g. 30 = 0.3%)
       callData: forwardCallData, // empty calldata for a simple transfer (byte-encoded)
       relayerFee: relayerFee, // fee paid to relayers
@@ -92,7 +93,7 @@ export const useConnext = () => {
     const approveTxReq = await sdkBase?.approveIfNeeded(
       chainToDomainId(chain.id),
       token,
-      "1000"
+      amount.toString(),
     );
 
     function walletClientToSigner(walletClient: WalletClient) {

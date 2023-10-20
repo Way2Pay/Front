@@ -7,20 +7,28 @@ import { slideRight, slideUp } from "../../context/motionpresets";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { disconnect } from "@wagmi/core";
-import {useConnext} from "../../hooks/useConnext"
+import { useConnext } from "../../hooks/useConnext";
 import CoinTable from "../CoinTable/CoinTable";
+import { desiredTokensByChainRev,chainNameToIdMap } from "../../utils/utils";
 
+type txData = {
+  toAddress?:string,
+  destination?:number,
+  txId?:string,
+  amount?:number,
+}
 const RedirectWelcome: NextPage = () => {
   const { chain } = useNetwork();
   const [fetchedTokens, setFetchedTokens] = useState<Coin[]>([]);
-  const {sendConnext} = useConnext();
+  const { sendConnext } = useConnext();
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
+  const [selectedChain,setSelectedChain] = useState<string|null>(null);
   const { switchNetwork } = useSwitchNetwork();
-
+  const [txData,setTxData]=useState<txData|null>(null)
   useEffect(() => {
     if (address) {
       fetch("/api/userDetails/getTokensForAddress", {
@@ -35,7 +43,7 @@ const RedirectWelcome: NextPage = () => {
         .then((response) => response.json())
         .then((data) => {
           setFetchedTokens(data);
-          console.log(data);
+          console.log("THIS", data);
         })
         .catch((error) => {
           console.error("There was an error fetching token balances:", error);
@@ -47,6 +55,13 @@ const RedirectWelcome: NextPage = () => {
     disconnect();
   };
 
+  const onConfirm =async()=>{
+    if(!selectedChain||!selectedCoin||!txData?.toAddress||!txData?.destination||!txData?.txId||!txData?.amount)
+    return
+    const tokenAddress = desiredTokensByChainRev[selectedChain][selectedCoin]
+    sendConnext(tokenAddress,txData.txId,txData.destination,txData.toAddress,txData.amount)
+
+  }
   const handleBackClick = () => {
     if (confirmedChain && !confirmedCoin) {
       setConfirmedChain(null);
@@ -56,38 +71,23 @@ const RedirectWelcome: NextPage = () => {
   };
 
   const handleConfirmCoin = () => {
-    if (!selectedCoin) return;
+    if (!selectedCoin||!selectedChain) return;
 
     setConfirmedCoin(selectedCoin);
-
+    console.log("CHAIN",selectedChain)
     // Find the selected token object based on the coin name
-    const selectedToken: Coin | undefined = fetchedTokens.find(
-      (token: Coin) => token.name === selectedCoin
-    );
-
-    // Extract the chain name from the selected token object
-    const selectedTokenChainName = selectedToken?.chain;
-
-    if (!selectedTokenChainName || !switchNetwork) {
-      console.error("Chain name not found or switchNetwork not available");
-      return;
-    }
+    console.log("HEREZZZ",fetchedTokens)
 
     // Mapping from chain names to their respective chain IDs
-    const chainNameToIdMap: { [key: string]: number } = {
-      MATIC_MUMBAI: 80001,
-      ETH_GOERLI: 5,
-      // ... add other chains as necessary
-    };
 
     // Get the chain ID based on the chain name
-    const selectedTokenChainId = chainNameToIdMap[selectedTokenChainName];
-
-    if (!selectedTokenChainId) {
-      console.error("Chain ID not found for name:", selectedTokenChainName);
+    const selectedTokenChainId = chainNameToIdMap[selectedChain];
+    console.log("ASAS",selectedTokenChainId)
+    if (!selectedTokenChainId||!switchNetwork) {
+      console.error("Chain ID not found for name:", selectedChain);
       return;
     }
-
+    console.log("HEREAGA")
     // Switch to the selected chain
     switchNetwork(selectedTokenChainId);
   };
@@ -138,6 +138,8 @@ const RedirectWelcome: NextPage = () => {
                           selectedCoin={selectedCoin}
                           confirmedCoin={confirmedCoin}
                           setSelectedCoin={setSelectedCoin}
+                          selectedChain={selectedChain}
+                          setSelectedChain={setSelectedChain}
                           handleConfirmCoin={handleConfirmCoin}
                         />
                       </motion.div>
