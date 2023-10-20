@@ -19,11 +19,11 @@ export default async function handler(request, response) {
         {
           await db.collection("Transactions").updateOne({_id:id},{$set:{status:"Expired"}},(err,res)=>{
             if(err) throw err
-            return response.status(301).headers({"Access-Control-Allow-Origin": "*"}).json({message:"Transaction has expired"})
+            return response.status(301).json({message:"Transaction has expired"})
           })
         }
         console.log("DATA", res);
-        return response.status(200).headers({"Access-Control-Allow-Origin": "*"}).json({ data: res });
+        return response.status(200).json({ data: res });
       });
   }
 }
