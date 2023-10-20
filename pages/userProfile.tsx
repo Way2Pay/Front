@@ -37,6 +37,7 @@ const UserProfile: React.FC = () => {
         setDescription(data?.desc?data.desc:"");
         setUserData(data);
       setUserPPP(userAlice);
+      setLoading(false)
     }
   };
   useEffect(()=>{
