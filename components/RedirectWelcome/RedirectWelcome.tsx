@@ -60,7 +60,7 @@ const RedirectWelcome: NextPage = () => {
     if(!selectedChain||!selectedCoin||!txData?.toAddress||!txData?.destination||!txData?.txId||!txData?.amount||!convertedAmount)
     return
     const tokenAddress = desiredTokensByChainRev[selectedChain][selectedCoin]
-    sendConnext(tokenAddress,txData.txId,txData.destination,txData.toAddress,convertedAmount)
+    await sendConnext(tokenAddress,txData.txId,txData.destination,txData.toAddress,convertedAmount)
 
   }
   const handleBackClick = () => {
