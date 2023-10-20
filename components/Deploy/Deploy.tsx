@@ -150,6 +150,7 @@ function DeployWelcome() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${auth.accessToken}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           chainId: chainId,

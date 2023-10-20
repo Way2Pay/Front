@@ -63,6 +63,9 @@ export default function Home() {
       onResponse={async (response: SismoConnectResponse) => {
         await fetch("/api/sismo/receiver", {
           method: "POST",
+          headers:{
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({data:response,userAddress:address}),
         });
       }}
