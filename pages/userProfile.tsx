@@ -39,7 +39,7 @@ const UserProfile: React.FC = () => {
       let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
       fetchUserData(userAlice);
       setUserPPP(userAlice);
-      setLoading;
+      setLoading(false);
     }
   };
   useEffect(() => {
