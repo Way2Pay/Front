@@ -18,33 +18,34 @@ import { slideRight, slideUp } from "../../context/motionpresets";
 import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTableUser";
 import { getContractAddress } from "viem";
+import Navbar from "../HomePage/Navbar";
 function DeployWelcome() {
   const { switchNetwork } = useSwitchNetwork();
-  
-  const [auth,setAuth]= useRecoilState(authState)
+
+  const [auth, setAuth] = useRecoilState(authState);
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
   const { openConnectModal } = useConnectModal();
   const [chainId, setChainId] = useState(1);
-  const publicClient = usePublicClient({chainId:chainId});
+  const publicClient = usePublicClient({ chainId: chainId });
   const { address, isConnecting, isDisconnected } = useAccount();
-  console.log("auth",auth)
+  console.log("auth", auth);
   const disconnectWallet = () => {
     disconnect();
   };
 
-  useEffect(()=>{
-    console.log
-    if(!auth.accessToken)
-    setAuth({...auth,accessToken:localStorage.getItem('accessToken')})
-  },[])
+  useEffect(() => {
+    console.log;
+    if (!auth.accessToken)
+      setAuth({ ...auth, accessToken: localStorage.getItem("accessToken") });
+  }, []);
 
   useEffect(() => {
     const abc = async () => {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`);
-      console.log(await res.json())
+      console.log(await res.json());
     };
     abc();
   });
@@ -108,11 +109,7 @@ function DeployWelcome() {
   const handleConfirmCoin = () => {
     setConfirmedCoin(selectedCoin);
   };
-  const {
-    data: client,
-    isError,
-    isLoading,
-  } = useWalletClient();
+  const { data: client, isError, isLoading } = useWalletClient();
   const fetchedTokens = [
     { name: "Ethereum", price: "2000" },
     { name: "Bitcoin", price: "40000" },
@@ -135,32 +132,40 @@ function DeployWelcome() {
           "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         ],
       });
-      if(!a)
-      return;
-      const receipt = await publicClient.waitForTransactionReceipt({hash:a})
-      console.log("RECEIPT",receipt)
-      if(!address)
-      return 
-      const nonce = await publicClient.getTransactionCount({address:address})
-      const b = BigInt(nonce-1)
-      const contractAddress= await getContractAddress({from:address,nonce:b})
-      
-      console.log("Address",contractAddress)
-      const request = await fetch(process.env.NEXT_PUBLIC_API_URL+"/deploy",{
-        method:"POST",
-        headers:{
-          "Authorization": `Bearer ${auth.accessToken}`
+      if (!a) return;
+      const receipt = await publicClient.waitForTransactionReceipt({ hash: a });
+      console.log("RECEIPT", receipt);
+      if (!address) return;
+      const nonce = await publicClient.getTransactionCount({
+        address: address,
+      });
+      const b = BigInt(nonce - 1);
+      const contractAddress = await getContractAddress({
+        from: address,
+        nonce: b,
+      });
+
+      console.log("Address", contractAddress);
+      const request = await fetch(process.env.NEXT_PUBLIC_API_URL + "/deploy", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${auth.accessToken}`,
         },
-        body:JSON.stringify({chainId:chainId,coinAddress:selectedCoin,contractAddress:contractAddress})
-      })
-      console.log(await request.json())
+        body: JSON.stringify({
+          chainId: chainId,
+          coinAddress: selectedCoin,
+          contractAddress: contractAddress,
+        }),
+      });
+      console.log(await request.json());
     } catch (err: unknown) {}
   }
   const { heading, subheading } = getHeadingText();
 
   return (
     <div>
-      <section className="relative flex items-center w-full bg-black">
+      <Navbar />
+      <section className="relative flex items-center w-full bg-white">
         <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
           <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl  ">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">

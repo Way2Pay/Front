@@ -83,6 +83,45 @@ const UserProfile: React.FC = () => {
     }
   }, [auth.accessToken, router]);
 
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.accessToken}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log("Raw fetched data:", data);
+
+      if (data.data && data.data.length > 0) {
+        setNickname(data.data[0].nickname);
+        setDescription(data.data[0].desc);
+        setUserData(data.data[0]);
+      }
+      setLoading(false);
+    } catch (error: any) {
+      setLoading(false);
+      if (error.message.includes("401")) {
+        localStorage.removeItem("accessToken");
+        setAuth((prevState) => ({
+          ...prevState,
+          accessToken: null,
+        }));
+        router.push("/login");
+        return;
+      } else {
+        console.error("Error fetching user data:", error);
+      }
+    }
+  };
+
   const updateUserData = async () => {
     const requestBody = {
       nickname: nickname,
@@ -102,6 +141,8 @@ const UserProfile: React.FC = () => {
     if (res.ok) {
       const responseData = await res.json();
       console.log(responseData);
+      setEditing(false); // Hide the editing form
+      fetchData(); // Reload the data after successfully updating
     } else {
       console.error("Failed to update user data:", await res.text());
     }
@@ -114,23 +155,13 @@ const UserProfile: React.FC = () => {
       {loading ? (
         <div>Loading...</div>
       ) : editing || !userData ? (
-        <>
-          <User
-            onNicknameChange={handleNicknameChange}
-            onDescriptionChange={handleDescriptionChange}
-            onSave={updateUserData}
-          />
-        </>
+        <User
+          onNicknameChange={handleNicknameChange}
+          onDescriptionChange={handleDescriptionChange}
+          onSave={updateUserData}
+        />
       ) : (
-        <div>
-          <button
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-            onClick={() => setEditing(true)}
-          >
-            Edit
-          </button>
-          <UserData data={userData} />
-        </div>
+        <UserData data={userData} onEdit={() => setEditing(true)} />
       )}
     </div>
   );

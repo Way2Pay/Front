@@ -1,29 +1,25 @@
-import React from "react";
-
 interface UserDataProps {
   data: {
     nickname: string;
     desc: string;
   };
+  onEdit: () => void;
 }
 
-const UserData: React.FC<UserDataProps> = ({ data }) => {
+const UserData: React.FC<UserDataProps> = ({ data, onEdit }) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-200 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-6 rounded-xl shadow-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Welcome back, {data.nickname}!
-          </h2>
-        </div>
-        <div className="rounded-md shadow-sm -space-y-px">
-          <div className="py-5 border-t border-gray-300">
-            <label className="block text-lg font-medium text-gray-700">
-              Description
-            </label>
-            <p className="mt-2 text-base text-gray-500">{data.desc}</p>
-          </div>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 relative ">
+      <div className="bg-white p-10 rounded-xl shadow-lg max-w-7xl space-y-6 ">
+        <h2 className="text-3xl font-bold mb-4 text-gray-800">
+          Welcome back, {data.nickname}!
+        </h2>
+        <p className="text-lg text-gray-700 leading-relaxed">{data.desc}</p>
+        <button
+          className="absolute top-5 left-5 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition duration-300 ease-in-out shadow-md"
+          onClick={onEdit}
+        >
+          Edit
+        </button>
       </div>
     </div>
   );
