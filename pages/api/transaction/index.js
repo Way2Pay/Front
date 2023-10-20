@@ -1,3 +1,20 @@
+const allowCors = fn => async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  // another common pattern
+  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  )
+  if (req.method === 'OPTIONS') {
+    res.status(200).end()
+    return
+  }
+  return await fn(req, res)
+}
+
 import clientPromise from "../../../db/database";
 import {
   getToken,
@@ -45,14 +62,13 @@ export default async function handler(request, response) {
               { address: address, amount: amount, status: "initiated", createTime:timestamp,chainId:chainId, contractAddress },
               async (err, res) => {
                 if (err) throw err;
-                console.log("HERE", res.insertedId);
-                id = res.insertedId;
+                id = await res.insertedId;
                 await db
                   .collection("Users")
                   .updateOne(
                     myquery,
                     { $push: { transactions: id } },
-                    (err, res) => {
+                    async (err, res) => {
                       if (err) throw err;
                       console.log(id);
                       return response.status(200).json({ id: id });
@@ -63,6 +79,8 @@ export default async function handler(request, response) {
         }
       });
   } else {
-    response.status(400).json({ message: "Incorrect Method" });
+    return response.status(400).json({ message: "Incorrect Method" });
   }
 }
+
+module.exports =allowCors(handler)
