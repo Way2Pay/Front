@@ -45,8 +45,8 @@ type DomainID = {
     return domainToChain[chainId];
   };
   
-  export const nameToChainId = (name:string)=>{
-const desiredTokensByChain = {
+
+export const desiredTokensByChain = {
     MATIC_MUMBAI: {
       "0x52D800ca262522580CeBAD275395ca6e7598C014": "USDC",
       "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2": "USDT",
@@ -66,6 +66,6 @@ const desiredTokensByChain = {
       "0x68Db1c8d85C09d546097C65ec7DCBFF4D6497CbF": "TEST",
     },
   };
-  }
+
   
   // Specific to covalent API

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Chain, chains as defaultChains } from "../../context/chain";
+import { Chain} from "../../context/chain";
 
+import { desiredTokensByChain } from "../../utils/utils";
 interface TableProps {
   chains?: Chain[];
   selectedChain: string | null;
@@ -10,12 +11,12 @@ interface TableProps {
 }
 
 const ChainTable: React.FC<TableProps> = ({
-  chains = defaultChains,
   selectedChain,
   confirmedChain,
   setSelectedChain,
   handleConfirmChain,
 }) => {
+  const chains = Object.keys(desiredTokensByChain)
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -33,14 +34,14 @@ const ChainTable: React.FC<TableProps> = ({
           <tbody>
             {chains.map((chain) => (
               <tr
-                key={chain.name}
+                key={chain}
                 className={`border-b ${
-                  selectedChain === chain.name ? "bg-blue-100" : "bg-white"
+                  selectedChain === chain ? "bg-blue-100" : "bg-white"
                 }`}
-                onClick={() => setSelectedChain(chain.name)}
+                onClick={() => setSelectedChain(chain)}
               >
-                <td className="px-6 py-4">{chain.name}</td>
-                <td className="px-6 py-4">{chain.gasPrice}</td>
+                <td className="px-6 py-4">{chain}</td>
+                <td className="px-6 py-4">{100+" wei"}</td>
               </tr>
             ))}
           </tbody>

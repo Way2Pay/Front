@@ -3,17 +3,17 @@ const { Alchemy, Network } = require("alchemy-sdk");
 // Multiple chain configurations
 const configs = [
   {
-    apiKey: "x7uHGTcZpefmAG624XyTaJRgXksnMlzc",
+    apiKey: process.env.ALCHEMY_MUMBAI,
     network: Network.MATIC_MUMBAI,
     name: "MATIC_MUMBAI",
   },
   {
-    apiKey: "97QAFe9DJaGdJFjit3ye-64rNlYK5pLd",
+    apiKey: process.env.ALCHEMY_ETH_GOERLI,
     network: Network.ETH_GOERLI,
     name: "ETH_GOERLI",
   },
   {
-    apiKey: "o3o0J-G8ILdpPT1RCi9WGj_V-c48mZ5t",
+    apiKey: process.env.ALCHEMY_OPT_GOERLI,
     network: Network.OPT_GOERLI,
     name: "OPT_GOERLI",
   },
