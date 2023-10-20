@@ -7,10 +7,6 @@ import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { disconnect } from "@wagmi/core";
 import dynamic from "next/dynamic";
 import { useSwitchNetwork } from "wagmi";
-import {
-  tokenAddresses,
-  routerAddress,
-} from "../../context/chainTokenaddresses";
 import { ContractFactory } from "ethers";
 import "../../destabi.json";
 import { motion } from "framer-motion";
@@ -19,16 +15,18 @@ import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTableUser";
 import { getContractAddress } from "viem";
 import Navbar from "../HomePage/Navbar";
-function DeployWelcome() {
+import { useRouter } from "next/router";
+const DeployWelcome: NextPage = () => {
   const { switchNetwork } = useSwitchNetwork();
 
+  const router = useRouter();
   const [auth, setAuth] = useRecoilState(authState);
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
   const { openConnectModal } = useConnectModal();
-  const [chainId, setChainId] = useState(1);
+  const [chainId, setChainId] = useState<number>();
   const publicClient = usePublicClient({ chainId: chainId });
   const { address, isConnecting, isDisconnected } = useAccount();
   console.log("auth", auth);
@@ -39,6 +37,9 @@ function DeployWelcome() {
   useEffect(() => {
     console.log;
     if (!auth.accessToken)
+    if(!localStorage.getItem("accessToken")?.length){
+      router.push("/login")
+    }
       setAuth({ ...auth, accessToken: localStorage.getItem("accessToken") });
   }, []);
 
@@ -87,7 +88,6 @@ function DeployWelcome() {
     ETH_GOERLI: 5,
     // ... add other chains as necessary
   };
-  
 
   const handleConfirmChain = () => {
     setChainId(chainNameToIdMap[selectedChain || ""]);
@@ -122,7 +122,7 @@ function DeployWelcome() {
     let abiData = require("../../destabi.json");
 
     console.log(client);
-    const gasLimit = BigInt("2000000")
+    const gasLimit = BigInt("2000000");
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
     try {
       const a = await client?.deployContract({
@@ -133,7 +133,7 @@ function DeployWelcome() {
           "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1",
           "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         ],
-        gas:gasLimit
+        gas: gasLimit,
       });
       if (!a) return;
       const receipt = await publicClient.waitForTransactionReceipt({ hash: a });
@@ -303,6 +303,6 @@ function DeployWelcome() {
       </section>
     </div>
   );
-}
+};
 
 export default dynamic(() => Promise.resolve(DeployWelcome), { ssr: false });
