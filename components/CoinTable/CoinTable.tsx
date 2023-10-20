@@ -7,7 +7,7 @@ interface CoinTableProps {
   confirmedCoin: string | null;
   setSelectedCoin: (coin: string | null) => void;
   setSelectedChain: (chain: string | null) => void;
-  selectedChain: string|null;
+  selectedChain: string | null;
   handleConfirmCoin: () => void;
 }
 
@@ -28,7 +28,6 @@ const CoinTable: React.FC<CoinTableProps> = ({
     }
     return acc;
   }, {});
-  console.log("HERE",groupedCoins)
 
   return (
     <>
@@ -52,21 +51,24 @@ const CoinTable: React.FC<CoinTableProps> = ({
               </thead>
               <tbody>
                 {chainCoins.map((token) => {
-                  console.log("HER",chain)
-
-                  return(
-                  <tr
-                    key={token.name}
-                    className={`border-b ${
-                      selectedCoin === token.name && chain ===selectedChain? "bg-blue-100" : "bg-white"
-                    }`}
-                    onClick={() => {setSelectedCoin(token.name), setSelectedChain(chain)}}
-                  >
-                    <td className="px-6 py-4">{token.name}</td>
-                    <td className="px-6 py-4">{token.symbol}</td>
-                    <td className="px-6 py-4">{token.balance}</td>
-                  </tr>
-                )})}
+                  return (
+                    <tr
+                      key={token.name}
+                      className={`border-b ${
+                        selectedCoin === token.name && chain === selectedChain
+                          ? "bg-blue-100"
+                          : "bg-white"
+                      }`}
+                      onClick={() => {
+                        setSelectedCoin(token.name), setSelectedChain(chain);
+                      }}
+                    >
+                      <td className="px-6 py-4">{token.name}</td>
+                      <td className="px-6 py-4">{token.symbol}</td>
+                      <td className="px-6 py-4">{token.balance}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
