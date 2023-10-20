@@ -5,7 +5,7 @@ import {
   verifyToken,
 } from "../../../backend-services/auth";
 export default async function handler(request, response) {
-  if (request.method === "OPTIONS") return response.status(200).send("ok");
+  if (request.method === "OPTIONS") return response.status(200).send("OK");
 
   const client = await clientPromise;
   const db = client.db("PayDB");
@@ -20,7 +20,7 @@ export default async function handler(request, response) {
     console.log(validity);
     const {address}=validity.payload;
 
-    db.collection("Transactions").find({address:address}).toArray((err,res)=>{
+    await db.collection("Transactions").find({address:address}).toArray((err,res)=>{
       if(err) throw err
       console.log("TX",res)
       return response.status(200).json({transactions:res})
