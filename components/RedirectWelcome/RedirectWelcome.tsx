@@ -29,6 +29,7 @@ const RedirectWelcome: NextPage = () => {
   const [selectedChain,setSelectedChain] = useState<string|null>(null);
   const { switchNetwork } = useSwitchNetwork();
   const [txData,setTxData]=useState<txData|null>(null)
+  const [convertedAmount,setConvertedAmount]=useState<number|null>(null)
   useEffect(() => {
     if (address) {
       fetch("/api/userDetails/getTokensForAddress", {
@@ -56,10 +57,10 @@ const RedirectWelcome: NextPage = () => {
   };
 
   const onConfirm =async()=>{
-    if(!selectedChain||!selectedCoin||!txData?.toAddress||!txData?.destination||!txData?.txId||!txData?.amount)
+    if(!selectedChain||!selectedCoin||!txData?.toAddress||!txData?.destination||!txData?.txId||!txData?.amount||!convertedAmount)
     return
     const tokenAddress = desiredTokensByChainRev[selectedChain][selectedCoin]
-    sendConnext(tokenAddress,txData.txId,txData.destination,txData.toAddress,txData.amount)
+    sendConnext(tokenAddress,txData.txId,txData.destination,txData.toAddress,convertedAmount)
 
   }
   const handleBackClick = () => {
