@@ -1,9 +1,10 @@
 import clientPromise from "../../../db/database";
-
+import { generateNonce } from "siwe";
 export default async function handler(request, response) {
   const client = await clientPromise;
   const { address } = request.query;
   console.log(address);
+  const nonce = generateNonce();
   const db = client.db("PayDB");
   db.collection("Users")
     .find({ address: address })
@@ -16,6 +17,7 @@ export default async function handler(request, response) {
           (err, res) => {
             if (err) throw err;
             console.log("Inserted", res.insertedId);
+            return response.status(200).json({ nonce: newNonce });
           }
         );
       } else {
