@@ -122,7 +122,7 @@ function DeployWelcome() {
     let abiData = require("../../destabi.json");
 
     console.log(client);
-    const gasLimit = BigInt("200000")
+    const gasLimit = BigInt("2000000")
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
     try {
       const a = await client?.deployContract({
