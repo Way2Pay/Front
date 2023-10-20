@@ -43,13 +43,7 @@ const DeployWelcome: NextPage = () => {
       setAuth({ ...auth, accessToken: localStorage.getItem("accessToken") });
   }, []);
 
-  useEffect(() => {
-    const abc = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`);
-      console.log(await res.json());
-    };
-    abc();
-  });
+
   function getHeadingText() {
     if (!address || isDisconnected) {
       return {

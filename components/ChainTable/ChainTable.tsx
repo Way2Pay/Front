@@ -1,22 +1,27 @@
-import React, { useState } from "react";
-import { Chain} from "../../context/chain";
-
+import React, { useEffect, useState } from "react";
 import { desiredTokensByChain } from "../../utils/utils";
 interface TableProps {
-  chains?: Chain[];
   selectedChain: string | null;
   confirmedChain: string | null;
   setSelectedChain: (chain: string | null) => void;
   handleConfirmChain: () => void;
 }
 
+type Chain={
+  name:string,
+  gasPrice:string|number,
+}
 const ChainTable: React.FC<TableProps> = ({
   selectedChain,
   confirmedChain,
   setSelectedChain,
   handleConfirmChain,
 }) => {
-  const chains = Object.keys(desiredTokensByChain)
+
+  const [chains,setChains]=useState<Chain[]>()
+  useEffect(()=>{
+    const chains = Promise.all(Object.values(desiredTokensByChain))
+  })
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -32,16 +37,16 @@ const ChainTable: React.FC<TableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {chains.map((chain) => (
+            {chains&&chains.map((chain) => (
               <tr
-                key={chain}
+                key={chain.name}
                 className={`border-b ${
-                  selectedChain === chain ? "bg-blue-100" : "bg-white"
+                  selectedChain === chain.name ? "bg-blue-100" : "bg-white"
                 }`}
-                onClick={() => setSelectedChain(chain)}
+                onClick={() => setSelectedChain(chain.name)}
               >
-                <td className="px-6 py-4">{chain}</td>
-                <td className="px-6 py-4">{100+" wei"}</td>
+                <td className="px-6 py-4">{chain.name}</td>
+                <td className="px-6 py-4">{chain.gasPrice}</td>
               </tr>
             ))}
           </tbody>

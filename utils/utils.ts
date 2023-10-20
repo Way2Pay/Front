@@ -1,6 +1,7 @@
 // This file is very specific to connext protocol.
 // For more reference go to https://docs.connext.network/
 
+import { Network } from "alchemy-sdk";
 type DomainID = {
     [key: number]: string;
   };
@@ -45,6 +46,24 @@ type DomainID = {
     return domainToChain[chainId];
   };
   
+
+export const alchemyConfigs = [
+  {
+    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_MATIC_MUMBAI,
+    network: Network.MATIC_MUMBAI,
+    name: "MATIC_MUMBAI",
+  },
+  {
+    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ETH_GOERLI,
+    network: Network.ETH_GOERLI,
+    name: "ETH_GOERLI",
+  },
+  {
+    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_OPT_GOERLI,
+    network: Network.OPT_GOERLI,
+    name: "OPT_GOERLI",
+  },
+];
 
 export const desiredTokensByChain = {
     MATIC_MUMBAI: {

@@ -1,23 +1,6 @@
 const { Alchemy, Network } = require("alchemy-sdk");
-
+import {alchemyConfigs} from "../../../utils/utils"
 // Multiple chain configurations
-const configs = [
-  {
-    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_MUMBAI,
-    network: Network.MATIC_MUMBAI,
-    name: "MATIC_MUMBAI",
-  },
-  {
-    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ETH_GOERLI,
-    network: Network.ETH_GOERLI,
-    name: "ETH_GOERLI",
-  },
-  {
-    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_OPT_GOERLI,
-    network: Network.OPT_GOERLI,
-    name: "OPT_GOERLI",
-  },
-];
 const desiredTokensByChain = {
   MATIC_MUMBAI: {
     "0x52D800ca262522580CeBAD275395ca6e7598C014": "USDC",
@@ -97,7 +80,7 @@ export default async function handler(req, res) {
   try {
     // Fetch data for all chains concurrently
     const results = await Promise.all(
-      configs.map((config) => fetchTokensForChain(config, address))
+      alchemyConfigs.map((config) => fetchTokensForChain(config, address))
     );
 
     // Flatten the results into a single array
