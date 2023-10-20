@@ -80,6 +80,11 @@ export const tokenSymbolToName: { [key: string]: string } = {
   TEST: "Test Token",
 };
 
+export const chainToChainName:{[key:string]:string}={
+  MATIC_MUMBAI:"POLYGON MUMBAI",
+  ETH_GOERLI:"ETHEREUM GOERLI",
+  OPT_GOERLI:"OPTIMIST GOERLI",
+}
 export const desiredTokensByChain: { [key: string]: CoinAddresses } = {
   MATIC_MUMBAI: {
     "0x52D800ca262522580CeBAD275395ca6e7598C014": "USDC",

@@ -1,5 +1,6 @@
 import React from "react";
 import { Coin } from "../../context/coin";
+import { chainToChainName } from "../../utils/utils";
 
 interface CoinTableProps {
   coins?: Coin[];
@@ -33,7 +34,7 @@ const CoinTable: React.FC<CoinTableProps> = ({
     <>
       {Object.entries(groupedCoins).map(([chain, chainCoins]) => (
         <div key={chain}>
-          <h2 className="text-xl font-bold mb-4">{chain}</h2>
+          <h2 className="text-xl font-bold mb-4">{chainToChainName[chain]}</h2>
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
