@@ -7,6 +7,14 @@ export type Transaction = {
   txHash: string; // New property
 };
 
+export type Deployements = {
+  chainId: string | number;
+  coin: string;
+  contract: string | `0x${string}`;
+  owner: string | `0x${string}`;
+  _id: string;
+};
+
 const formatAddress = (address: string) => {
   if (address.length <= 6) return address; // Return the original address if it's too short
   return `${address.substring(0, 2)}...${address.substring(
@@ -14,9 +22,10 @@ const formatAddress = (address: string) => {
   )}`;
 };
 
+
 type DataTableProps = {
   transactions: Transaction[];
-  deployedContracts?: Transaction[]; // Make this optional
+  deployedContracts?: Deployements[]; // Make this optional
   onTransactionClick: (transaction: Transaction) => void;
   showDeployedContracts?: boolean; // New prop
 };
@@ -115,17 +124,17 @@ const DataTable: React.FC<DataTableProps> = ({
                         {deployedContracts.map((contract) => (
                           <tr
                             key={contract._id}
-                            onClick={() => onTransactionClick(contract)}
+                            onClick={() => {}}
                           >
                             <td className="px-6 py-4">
                               {formatAddress(contract._id)}
                             </td>
                             <td className="px-6 py-4">
-                              {formatAddress(contract.address)}
+                              {formatAddress(contract.contract)}
                             </td>
-                            <td className="px-6 py-4">{contract.amount}</td>
+                            <td className="px-6 py-4">{contract.chainId}</td>
                             <td className="px-6 py-4">
-                              {formatAddress(contract.buyer)}
+                              {formatAddress(contract.owner)}
                             </td>
                           </tr>
                         ))}

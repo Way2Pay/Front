@@ -158,7 +158,6 @@ const UserDashBoard: NextPage = () => {
           >
             <DataTable
               transactions={transactions}
-              deployedContracts={deployedContracts}
               onTransactionClick={handleTransactionClick}
             />
           </motion.div>
