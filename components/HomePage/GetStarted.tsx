@@ -41,48 +41,19 @@ const GetStarted: React.FC = () => {
       <section>
         <div className="relative items-center w-full px-5 mx-auto md:px-12 lg:px-16 max-w-7xl">
           <div className="py-12 mx-auto lg:py-16">
-            <div className="grid grid-cols-2 gap-0.5 md:grid-cols-6">
+            <div className="grid grid-cols-2 gap-0.5 md:grid-cols-4">
               <div className="flex justify-center col-span-1 px-8">
-                <img
-                  className="max-h-12"
-                  src="../images/logos/1.svg"
-                  alt="logo"
-                />
+                <img className="max-h-12" src="connext.png" alt="logo" />
               </div>
               <div className="flex justify-center col-span-1 px-8">
-                <img
-                  className="max-h-12"
-                  src="../images/logos/2.svg"
-                  alt="logo"
-                />
+                <img className="max-h-12" src="uni.png" alt="logo" />
+              </div>
+
+              <div className="flex justify-center col-span-1 px-8">
+                <img className="max-h-12" src="polygon.png" alt="logo" />
               </div>
               <div className="flex justify-center col-span-1 px-8">
-                <img
-                  className="max-h-12"
-                  src="../images/logos/3.svg"
-                  alt="logo"
-                />
-              </div>
-              <div className="flex justify-center col-span-1 px-8">
-                <img
-                  className="max-h-12"
-                  src="../images/logos/4.svg"
-                  alt="logo"
-                />
-              </div>
-              <div className="flex justify-center col-span-1 px-8">
-                <img
-                  className="max-h-12"
-                  src="../images/logos/5.svg"
-                  alt="logo"
-                />
-              </div>
-              <div className="flex justify-center col-span-1 px-8">
-                <img
-                  className="max-h-12"
-                  src="../images/logos/6.svg"
-                  alt="logo"
-                />
+                <img className="max-h-12" src="push.png" alt="logo" />
               </div>
             </div>
           </div>
