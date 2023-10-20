@@ -5,7 +5,7 @@ import {
   verifyToken,
 } from "../../../backend-services/auth";
 export default async function handler(request, response) {
-  if (request.method === "OPTIONS") return response.status(200).body({ OK });
+  if (request.method === "OPTIONS") return response.headers({'Access-Control-Allow-Origin': '*'}).status(200).body({ OK });
 
   const client = await clientPromise;
   const db = client.db("PayDB");
@@ -27,7 +27,7 @@ export default async function handler(request, response) {
     })
   } else if (request.method === "POST") {
     const timestamp = Math.floor(Date.now()/1000);
-    const { address, amount, chainId } = request.body;
+    const { address, amount, chainId, contractAddress } = request.body;
     let myquery = { address: address };
     var id;
     var abc = await db
@@ -42,7 +42,7 @@ export default async function handler(request, response) {
           await db
             .collection("Transactions")
             .insertOne(
-              { address: address, amount: amount, status: "initiated", createTime:timestamp,chainId:chainId },
+              { address: address, amount: amount, status: "initiated", createTime:timestamp,chainId:chainId, contractAddress },
               async (err, res) => {
                 if (err) throw err;
                 console.log("HERE", res.insertedId);

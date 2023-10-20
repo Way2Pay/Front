@@ -16,6 +16,7 @@
     "@rainbow-me/rainbowkit": "^1.1.1",
     "@sismo-core/sismo-connect-react": "^0.0.23",
     "@sismo-core/sismo-connect-server": "^0.0.23",
+    "@uniswap/sdk-core": "^4.0.9",
     "alchemy-sdk": "^2.10.1",
     "ethers": "^5.7.2",
     "framer": "^2.4.1",

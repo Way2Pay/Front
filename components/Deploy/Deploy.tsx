@@ -7,10 +7,6 @@ import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { disconnect } from "@wagmi/core";
 import dynamic from "next/dynamic";
 import { useSwitchNetwork } from "wagmi";
-import {
-  tokenAddresses,
-  routerAddress,
-} from "../../context/chainTokenaddresses";
 import { ContractFactory } from "ethers";
 import "../../destabi.json";
 import { motion } from "framer-motion";
@@ -18,36 +14,41 @@ import { slideRight, slideUp } from "../../context/motionpresets";
 import ChainTable from "../ChainTable/ChainTable";
 import CoinTable from "../CoinTable/CoinTableUser";
 import { getContractAddress } from "viem";
-function DeployWelcome() {
+import Navbar from "../HomePage/Navbar";
+import { useRouter } from "next/router";
+import { desiredTokensByChain, tokenSymbolToName } from "../../utils/utils";
+const DeployWelcome: NextPage = () => {
   const { switchNetwork } = useSwitchNetwork();
-  
-  const [auth,setAuth]= useRecoilState(authState)
+
+  const router = useRouter();
+  const [auth, setAuth] = useRecoilState(authState);
   const [selectedChain, setSelectedChain] = useState<string | null>(null);
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
   const [confirmedCoin, setConfirmedCoin] = useState<string | null>(null);
   const { openConnectModal } = useConnectModal();
-  const [chainId, setChainId] = useState(1);
-  const publicClient = usePublicClient({chainId:chainId});
+  const [chainId, setChainId] = useState<number>();
+  const publicClient = usePublicClient({ chainId: chainId });
   const { address, isConnecting, isDisconnected } = useAccount();
-  console.log("auth",auth)
+  console.log("auth", auth);
   const disconnectWallet = () => {
     disconnect();
   };
 
-  useEffect(()=>{
-    console.log
-    if(!auth.accessToken)
-    setAuth({...auth,accessToken:localStorage.getItem('accessToken')})
-  },[])
-
   useEffect(() => {
-    const abc = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`);
-      console.log(await res.json())
-    };
-    abc();
-  });
+    console.log;
+    if (!auth.accessToken)
+      if (!localStorage.getItem("accessToken")?.length) {
+        router.push("/login");
+      }
+    setAuth({ ...auth, accessToken: localStorage.getItem("accessToken") });
+  }, []);
+
+  type Coin = {
+    name: string;
+  symbol: string;
+  address: string|`0x${string}`;
+  };
   function getHeadingText() {
     if (!address || isDisconnected) {
       return {
@@ -84,6 +85,7 @@ function DeployWelcome() {
   const chainNameToIdMap: { [key: string]: number } = {
     MATIC_MUMBAI: 80001,
     ETH_GOERLI: 5,
+    OPT_GOERLI: 420,
     // ... add other chains as necessary
   };
 
@@ -104,26 +106,32 @@ function DeployWelcome() {
     setChainId(selectedChainId);
     switchNetwork(selectedChainId);
   };
+  useEffect(() => {
+    if (selectedChain) {
+      let data = desiredTokensByChain[selectedChain];
+      let coinData = Object.keys(data).map((coin,index)=>{
+        return{
+          name:data[coin],
+          address:coin,
+          symbol:tokenSymbolToName[data[coin]]
+        }
+      })
+      console.log("HERE",coinData)
+      setFetchedTokens(coinData)
+    }
+  }, [selectedChain]);
 
   const handleConfirmCoin = () => {
     setConfirmedCoin(selectedCoin);
   };
-  const {
-    data: client,
-    isError,
-    isLoading,
-  } = useWalletClient();
-  const fetchedTokens = [
-    { name: "Ethereum", price: "2000" },
-    { name: "Bitcoin", price: "40000" },
-    { name: "Cardano", price: "1.5" },
-    // ... add more tokens as needed
-  ];
+  const { data: client, isError, isLoading } = useWalletClient();
+  const [fetchedTokens, setFetchedTokens] = useState<Coin[]>();
 
   async function deployContract() {
     let abiData = require("../../destabi.json");
 
     console.log(client);
+    const gasLimit = BigInt("2000000");
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
     try {
       const a = await client?.deployContract({
@@ -131,36 +139,46 @@ function DeployWelcome() {
         account: address,
         bytecode: abiData["bytecode"] as `0x${string}`,
         args: [
-          "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1",
+          confirmedCoin,
           "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         ],
+        gas: gasLimit,
       });
-      if(!a)
-      return;
-      const receipt = await publicClient.waitForTransactionReceipt({hash:a})
-      console.log("RECEIPT",receipt)
-      if(!address)
-      return 
-      const nonce = await publicClient.getTransactionCount({address:address})
-      const b = BigInt(nonce-1)
-      const contractAddress= await getContractAddress({from:address,nonce:b})
-      
-      console.log("Address",contractAddress)
-      const request = await fetch(process.env.NEXT_PUBLIC_API_URL+"/deploy",{
-        method:"POST",
-        headers:{
-          "Authorization": `Bearer ${auth.accessToken}`
+      if (!a) return;
+      const receipt = await publicClient.waitForTransactionReceipt({ hash: a });
+      console.log("RECEIPT", receipt);
+      if (!address) return;
+      const nonce = await publicClient.getTransactionCount({
+        address: address,
+      });
+      const b = BigInt(nonce - 1);
+      const contractAddress = await getContractAddress({
+        from: address,
+        nonce: b,
+      });
+
+      console.log("Address", contractAddress);
+      const request = await fetch(process.env.NEXT_PUBLIC_API_URL + "/deploy", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${auth.accessToken}`,
+          "Content-Type": "application/json",
         },
-        body:JSON.stringify({chainId:chainId,coinAddress:selectedCoin,contractAddress:contractAddress})
-      })
-      console.log(await request.json())
+        body: JSON.stringify({
+          chainId: chainId,
+          coinAddress: confirmedCoin,
+          contractAddress: contractAddress,
+        }),
+      });
+      console.log(await request.json());
     } catch (err: unknown) {}
   }
   const { heading, subheading } = getHeadingText();
 
   return (
     <div>
-      <section className="relative flex items-center w-full bg-black">
+      <Navbar />
+      <section className="relative flex items-center w-full bg-white">
         <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
           <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl  ">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
@@ -208,7 +226,7 @@ function DeployWelcome() {
                           />
                         </motion.div>
                       )}
-                      {confirmedChain && !confirmedCoin && (
+                      {confirmedChain && !confirmedCoin && fetchedTokens && (
                         <motion.div
                           initial="hidden"
                           animate="visible"
@@ -294,6 +312,6 @@ function DeployWelcome() {
       </section>
     </div>
   );
-}
+};
 
 export default dynamic(() => Promise.resolve(DeployWelcome), { ssr: false });

@@ -1,21 +1,50 @@
-import React, { useState } from "react";
-import { Chain, chains as defaultChains } from "../../context/chain";
-
+import React, { useEffect, useState } from "react";
+import { desiredTokensByChain } from "../../utils/utils";
+import { Alchemy } from "alchemy-sdk";
+import { ethers } from "ethers";
+import { alchemyConfigs } from "../../utils/utils";
 interface TableProps {
-  chains?: Chain[];
   selectedChain: string | null;
   confirmedChain: string | null;
   setSelectedChain: (chain: string | null) => void;
   handleConfirmChain: () => void;
 }
 
+type Chain = {
+  name: string;
+  gasPrice: string | number;
+};
 const ChainTable: React.FC<TableProps> = ({
-  chains = defaultChains,
   selectedChain,
   confirmedChain,
   setSelectedChain,
   handleConfirmChain,
 }) => {
+  const [chains, setChains] = useState<Chain[]>();
+  useEffect(() => {
+    const getChains = async (config: (typeof alchemyConfigs)[0]) => {
+      const alchemy = new Alchemy(config);
+     let abc = await alchemy.core.getGasPrice();
+     const gas =  ethers.utils.formatUnits(abc,"gwei");
+     return {
+      name: config.name,
+      gasPrice: gas,
+     }
+    };
+    const initialize = async()=>{
+      const data = Promise.all(
+        alchemyConfigs.map((config) => {
+          return getChains(config);
+        })
+      ).then((res)=>{
+        console.log(res),
+        setChains(res)
+      });
+    }
+    initialize();
+    
+    
+  },[]);
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -31,18 +60,19 @@ const ChainTable: React.FC<TableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {chains.map((chain) => (
-              <tr
-                key={chain.name}
-                className={`border-b ${
-                  selectedChain === chain.name ? "bg-blue-100" : "bg-white"
-                }`}
-                onClick={() => setSelectedChain(chain.name)}
-              >
-                <td className="px-6 py-4">{chain.name}</td>
-                <td className="px-6 py-4">{chain.gasPrice}</td>
-              </tr>
-            ))}
+            {chains &&
+              chains.map((chain) => (
+                <tr
+                  key={chain.name}
+                  className={`border-b ${
+                    selectedChain === chain.name ? "bg-blue-100" : "bg-white"
+                  }`}
+                  onClick={() => setSelectedChain(chain.name)}
+                >
+                  <td className="px-6 py-4">{chain.name}</td>
+                  <td className="px-6 py-4">{chain.gasPrice}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

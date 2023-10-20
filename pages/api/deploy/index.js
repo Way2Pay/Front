@@ -14,7 +14,7 @@ export default async function handler(request, response) {
 
   if (!validity.authorized)
     return response.status(401).json({ message: validity.message });
-  const { _id: userId, address = address } = validity.payload;
+  const { _id: userId, address } = validity.payload;
 
   if (request.method === "GET") {
     db.collection("Deployements")
@@ -25,7 +25,7 @@ export default async function handler(request, response) {
         return response.status(200).json({ deployements: res });
       });
   } else if (request.method === "POST") {
-    const { chainId, coinAddress,contractAddress } = JSON.parse(request.body);
+    const { chainId, coinAddress,contractAddress } = request.body;
     console.log(request.body)
    await db.collection("Users")
       .find({ _id: userId })

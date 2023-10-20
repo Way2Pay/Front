@@ -1,5 +1,5 @@
 "use client";
-import { Transaction } from "../components/DashBoard/DataTable";
+import { Transaction, Deployements } from "../components/DashBoard/DataTable";
 import { useRouter } from "next/router";
 // import { createSocketConnection, EVENTS } from "@pushprotocol/socket";
 import { NextPage } from "next";
@@ -20,7 +20,7 @@ const SellerDashBoard: NextPage = () => {
   const [auth, setAuth] = useRecoilState(authState);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
-  const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
+  const [deployedContracts, setDeployedContracts] = useState<Deployements[]>([]);
   const { data: client } = useWalletClient();
   const { userPPP, setUserPPP } = useContext(PushContext);
   const handleSwitchToSellerDashboard = () => {
@@ -99,8 +99,8 @@ const SellerDashBoard: NextPage = () => {
         return;
       } else if (res.status === 200) {
         const data = await res.json();
-
-        setDeployedContracts(data.contracts); // Assuming the API returns an object with a contracts key
+        console.log("GGEE",data)
+        setDeployedContracts(data.deployements); // Assuming the API returns an object with a contracts key
       } else {
       }
     } catch (error) {

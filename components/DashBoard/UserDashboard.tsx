@@ -12,6 +12,13 @@ import TransactionModal from "../DashBoard/TransactionModal";
 import Coins from "../DashBoard/Coins";
 import { useWalletClient } from "wagmi";
 
+import { motion } from "framer-motion";
+import {
+  slideUp,
+  slideDown,
+  slideLeft,
+  slideRight,
+} from "../../context/motionpresets";
 import { PushContext } from "../../pages/_app";
 
 const UserDashBoard: NextPage = () => {
@@ -21,7 +28,7 @@ const UserDashBoard: NextPage = () => {
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
   const [deployedContracts, setDeployedContracts] = useState<Transaction[]>([]);
   const { data: client } = useWalletClient();
-  const {userPPP, setUserPPP} = useContext(PushContext)
+  const { userPPP, setUserPPP } = useContext(PushContext);
   useEffect(() => {
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
@@ -57,7 +64,7 @@ const UserDashBoard: NextPage = () => {
           ...prevState,
           accessToken: null,
         }));
-        setUserPPP(null)
+        setUserPPP(null);
         // Redirect to login
         router.push("/login");
         return;
@@ -124,15 +131,36 @@ const UserDashBoard: NextPage = () => {
 
   return (
     <>
-      <Navbar />
+      {" "}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        variants={slideDown}
+      >
+        <Navbar />
+      </motion.div>
       {hasFetchedTransactions && transactions.length > 0 && (
         <div>
-          <Coins />
-          <DataTable
-            transactions={transactions}
-            deployedContracts={deployedContracts}
-            onTransactionClick={handleTransactionClick}
-          />
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={slideDown}
+          >
+            <Coins />
+          </motion.div>
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={slideUp}
+          >
+            <DataTable
+              transactions={transactions}
+              onTransactionClick={handleTransactionClick}
+            />
+          </motion.div>
         </div>
       )}
       {selectedTransaction && (

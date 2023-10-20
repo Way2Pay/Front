@@ -1,11 +1,14 @@
 import React from "react";
 import { Coin } from "../../context/coin";
+import { chainToChainName } from "../../utils/utils";
 
 interface CoinTableProps {
   coins?: Coin[];
   selectedCoin: string | null;
   confirmedCoin: string | null;
   setSelectedCoin: (coin: string | null) => void;
+  setSelectedChain: (chain: string | null) => void;
+  selectedChain: string | null;
   handleConfirmCoin: () => void;
 }
 
@@ -14,6 +17,8 @@ const CoinTable: React.FC<CoinTableProps> = ({
   selectedCoin,
   confirmedCoin,
   setSelectedCoin,
+  setSelectedChain,
+  selectedChain,
   handleConfirmCoin,
 }) => {
   // Group coins by chain
@@ -29,7 +34,7 @@ const CoinTable: React.FC<CoinTableProps> = ({
     <>
       {Object.entries(groupedCoins).map(([chain, chainCoins]) => (
         <div key={chain}>
-          <h2 className="text-xl font-bold mb-4">{chain}</h2>
+          <h2 className="text-xl font-bold mb-4">{chainToChainName[chain]}</h2>
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
@@ -46,19 +51,25 @@ const CoinTable: React.FC<CoinTableProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {chainCoins.map((token) => (
-                  <tr
-                    key={token.name}
-                    className={`border-b ${
-                      selectedCoin === token.name ? "bg-blue-100" : "bg-white"
-                    }`}
-                    onClick={() => setSelectedCoin(token.name)}
-                  >
-                    <td className="px-6 py-4">{token.name}</td>
-                    <td className="px-6 py-4">{token.symbol}</td>
-                    <td className="px-6 py-4">{token.balance}</td>
-                  </tr>
-                ))}
+                {chainCoins.map((token) => {
+                  return (
+                    <tr
+                      key={token.name}
+                      className={`border-b ${
+                        selectedCoin === token.name && chain === selectedChain
+                          ? "bg-blue-100"
+                          : "bg-white"
+                      }`}
+                      onClick={() => {
+                        setSelectedCoin(token.name), setSelectedChain(chain);
+                      }}
+                    >
+                      <td className="px-6 py-4">{token.name}</td>
+                      <td className="px-6 py-4">{token.symbol}</td>
+                      <td className="px-6 py-4">{token.balance}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
