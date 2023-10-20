@@ -8,7 +8,9 @@ type DomainID = {
   type ChainID = {
     [key: string]: number;
   };
-  
+  type CoinAddresses = {
+    [key:string]:string;
+  };
   export const chainIdToRPC = (chainId: number) => {
     // Need to add more RPCs according to chains
     const chainToRPC: DomainID = {
@@ -65,7 +67,14 @@ export const alchemyConfigs = [
   },
 ];
 
-export const desiredTokensByChain = {
+export const tokenSymbolToName:{[key:string]:string} = {
+  "USDT":"USD Tether",
+  "USDC":"USD Coin",
+  "WETH":"Wrapped Ether",
+  "TEST":"Test Token",
+}
+
+export const desiredTokensByChain:{[key:string]:CoinAddresses} = {
     MATIC_MUMBAI: {
       "0x52D800ca262522580CeBAD275395ca6e7598C014": "USDC",
       "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2": "USDT",

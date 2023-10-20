@@ -2,7 +2,9 @@ import React from "react";
 
 interface Coin {
   name: string;
-  price: string;
+  symbol: string;
+  address: string|`0x${string}`;
+
 }
 
 interface CoinTableProps {
@@ -44,7 +46,7 @@ const CoinTableUser: React.FC<CoinTableProps> = ({
                 onClick={() => setSelectedCoin(token.name)}
               >
                 <td className="px-6 py-4">{token.name}</td>
-                <td className="px-6 py-4">{token.price}</td>
+                <td className="px-6 py-4">{token.symbol}</td>
               </tr>
             ))}
           </tbody>

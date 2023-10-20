@@ -16,6 +16,7 @@ import CoinTable from "../CoinTable/CoinTableUser";
 import { getContractAddress } from "viem";
 import Navbar from "../HomePage/Navbar";
 import { useRouter } from "next/router";
+import { desiredTokensByChain, tokenSymbolToName } from "../../utils/utils";
 const DeployWelcome: NextPage = () => {
   const { switchNetwork } = useSwitchNetwork();
 
@@ -37,13 +38,17 @@ const DeployWelcome: NextPage = () => {
   useEffect(() => {
     console.log;
     if (!auth.accessToken)
-    if(!localStorage.getItem("accessToken")?.length){
-      router.push("/login")
-    }
-      setAuth({ ...auth, accessToken: localStorage.getItem("accessToken") });
+      if (!localStorage.getItem("accessToken")?.length) {
+        router.push("/login");
+      }
+    setAuth({ ...auth, accessToken: localStorage.getItem("accessToken") });
   }, []);
 
-
+  type Coin = {
+    name: string;
+  symbol: string;
+  address: string|`0x${string}`;
+  };
   function getHeadingText() {
     if (!address || isDisconnected) {
       return {
@@ -80,6 +85,7 @@ const DeployWelcome: NextPage = () => {
   const chainNameToIdMap: { [key: string]: number } = {
     MATIC_MUMBAI: 80001,
     ETH_GOERLI: 5,
+    OPT_GOERLI: 420,
     // ... add other chains as necessary
   };
 
@@ -100,17 +106,26 @@ const DeployWelcome: NextPage = () => {
     setChainId(selectedChainId);
     switchNetwork(selectedChainId);
   };
+  useEffect(() => {
+    if (selectedChain) {
+      let data = desiredTokensByChain[selectedChain];
+      let coinData = Object.keys(data).map((coin,index)=>{
+        return{
+          name:data[coin],
+          address:coin,
+          symbol:tokenSymbolToName[data[coin]]
+        }
+      })
+      console.log("HERE",coinData)
+      setFetchedTokens(coinData)
+    }
+  }, [selectedChain]);
 
   const handleConfirmCoin = () => {
     setConfirmedCoin(selectedCoin);
   };
   const { data: client, isError, isLoading } = useWalletClient();
-  const fetchedTokens = [
-    { name: "Ethereum", price: "2000" },
-    { name: "Bitcoin", price: "40000" },
-    { name: "Cardano", price: "1.5" },
-    // ... add more tokens as needed
-  ];
+  const [fetchedTokens, setFetchedTokens] = useState<Coin[]>();
 
   async function deployContract() {
     let abiData = require("../../destabi.json");
@@ -124,7 +139,7 @@ const DeployWelcome: NextPage = () => {
         account: address,
         bytecode: abiData["bytecode"] as `0x${string}`,
         args: [
-          "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1",
+          confirmedCoin,
           "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         ],
         gas: gasLimit,
@@ -151,7 +166,7 @@ const DeployWelcome: NextPage = () => {
         },
         body: JSON.stringify({
           chainId: chainId,
-          coinAddress: selectedCoin,
+          coinAddress: confirmedCoin,
           contractAddress: contractAddress,
         }),
       });
@@ -211,7 +226,7 @@ const DeployWelcome: NextPage = () => {
                           />
                         </motion.div>
                       )}
-                      {confirmedChain && !confirmedCoin && (
+                      {confirmedChain && !confirmedCoin && fetchedTokens && (
                         <motion.div
                           initial="hidden"
                           animate="visible"

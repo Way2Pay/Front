@@ -1,5 +1,5 @@
 const { Alchemy, Network } = require("alchemy-sdk");
-import {alchemyConfigs} from "../../../utils/utils"
+import {alchemyConfigs, desiredTokensByChain} from "../../../utils/utils"
 // Multiple chain configurations
 const desiredTokensByChain = {
   MATIC_MUMBAI: {
