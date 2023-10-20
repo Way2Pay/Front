@@ -19,42 +19,40 @@ const UserProfile: React.FC = () => {
   const [nickname, setNickname] = useState("");
   const [description, setDescription] = useState("");
   const [editing, setEditing] = useState(false);
-  const { userPPP,setUserPPP } = useContext(PushContext);
-  const {data:client} = useWalletClient();
+  const { userPPP, setUserPPP } = useContext(PushContext);
+  const { data: client } = useWalletClient();
   const handleNicknameChange = (newNickname: string) => {
     setNickname(newNickname);
   };
   const handleDescriptionChange = (newDescription: string) => {
     setDescription(newDescription);
   };
-
+  const fetchUserData = async (userObject: PushAPI) => {
+    let data = await getUserInfo(userObject);
+    setUserData(data);
+    setNickname(data?.name ? data.name : "");
+    setDescription(data?.desc ? data.desc : "");
+  };
   const initializePush = async () => {
     if (client) {
-      console.log("REACHED IN HERE")
+      console.log("REACHED IN HERE");
       let userAlice = await PushAPI.initialize(client, { env: ENV.STAGING });
-      let data = await getUserInfo(userAlice)
-        setNickname( data?.name?data.name:"");
-        setDescription(data?.desc?data.desc:"");
-        setUserData(data);
+      fetchUserData(userAlice);
       setUserPPP(userAlice);
-      setLoading(false)
+      setLoading;
     }
   };
-  useEffect(()=>{
-    console.log("HERE",userPPP)
-    if(!userPPP)
-    {
-      if(client)
-      initializePush();
+  useEffect(() => {
+    console.log("HERE", userPPP);
+    if (!userPPP) {
+      if (client) initializePush();
     }
-
-  },[client])
+  }, [client]);
   useEffect(() => {
     setLoading(true);
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
       if (token) {
-       
         setAuth({
           ...auth,
           accessToken: token,
@@ -64,7 +62,6 @@ const UserProfile: React.FC = () => {
         return;
       }
     }
-    
 
     if (auth.accessToken) {
       //fetchData();
@@ -76,10 +73,10 @@ const UserProfile: React.FC = () => {
       nickname: nickname,
       desc: description,
     };
-   let data= updateUserInfo(userPPP,undefined,nickname,description)
+    let data = updateUserInfo(userPPP, undefined, nickname, description);
 
-      setEditing(false); // Hide the editing form
-       // Reload the data after successfully updating
+    setEditing(false); // Hide the editing form
+    // Reload the data after successfully updating
   };
   console.log("UserData value:", userData);
 
