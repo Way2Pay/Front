@@ -1,7 +1,7 @@
 import clientPromise from "../../../db/database";
 import { ObjectId } from "mongodb";
 export default async function handler(request, response) {
-  if (request.method === "OPTIONS") return response.status(200).body({ OK });
+  if (request.method === "OPTIONS") return response.status(200).send("ok");
   else {
     const client = await clientPromise;
     const db = client.db("PayDB");
