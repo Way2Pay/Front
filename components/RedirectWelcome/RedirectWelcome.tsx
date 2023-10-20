@@ -58,7 +58,7 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
         setTxData({
           toAddress: data.data.contractAddress,
           destination: parseInt(data.data.chainId),
-          txId: data._id,
+          txId: data.txId,
           amount: parseInt(data.data.amount),
         });
       }
