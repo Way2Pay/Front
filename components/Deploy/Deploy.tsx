@@ -87,6 +87,7 @@ function DeployWelcome() {
     ETH_GOERLI: 5,
     // ... add other chains as necessary
   };
+  
 
   const handleConfirmChain = () => {
     setChainId(chainNameToIdMap[selectedChain || ""]);
@@ -121,6 +122,7 @@ function DeployWelcome() {
     let abiData = require("../../destabi.json");
 
     console.log(client);
+    const gasLimit = BigInt("200000")
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
     try {
       const a = await client?.deployContract({
@@ -131,6 +133,7 @@ function DeployWelcome() {
           "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1",
           "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         ],
+        gas:gasLimit
       });
       if (!a) return;
       const receipt = await publicClient.waitForTransactionReceipt({ hash: a });
