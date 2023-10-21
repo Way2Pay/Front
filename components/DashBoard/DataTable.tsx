@@ -25,10 +25,10 @@ const formatAddress = (address: string) => {
 
 type DataTableProps = {
   transactions: Transaction[];
-  deployedContracts?: Deployements[]; // Make this optional
+  deployedContracts?: Deployements[];
   onTransactionClick: (transaction: Transaction) => void;
-  showDeployedContracts?: boolean; // New prop
-  onContractClick: (contract: Deployements) => void;
+  showDeployedContracts?: boolean;
+  onContractClick?: (contract: Deployements) => void; // Make this optional
 };
 
 const DataTable: React.FC<DataTableProps> = ({
@@ -126,7 +126,7 @@ const DataTable: React.FC<DataTableProps> = ({
                         {deployedContracts.map((contract) => (
                           <tr
                             key={contract._id}
-                            onClick={() => onContractClick(contract)}
+                            onClick={() => onContractClick?.(contract)}
                             className="cursor-pointer hover:bg-gray-100"
                           >
                             <td className="px-6 py-4">

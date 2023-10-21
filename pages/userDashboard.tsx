@@ -151,8 +151,8 @@ const UserDashBoard: NextPage = () => {
           <DataTable
             transactions={transactions}
             onTransactionClick={handleTransactionClick}
-            showDeployedContracts={false} // Set to false for UserDashboard
-            onContractClick={handleclose}
+            onContractClick={() => {}}
+            showDeployedContracts={false}
           />
         </div>
       )}
