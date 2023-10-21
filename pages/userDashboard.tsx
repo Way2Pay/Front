@@ -124,7 +124,9 @@ const UserDashBoard: NextPage = () => {
     setSelectedTransaction(transaction);
   };
 
-  const handleclose = () => {};
+  const handleclose = () => {
+    //ToDO
+  };
   const handleCloseModal = () => {
     setSelectedTransaction(null);
   };
