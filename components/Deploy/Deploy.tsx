@@ -176,9 +176,9 @@ const DeployWelcome: NextPage = () => {
     <div>
       <Navbar />
       <section className="relative flex items-center w-full bg-white">
-        <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
-          <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl  ">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
+        <div className="relative items-center w-full px-5  mx-auto md:px-12 lg:px-16 ">
+          <div className="relative flex-col items-start m-auto  bg-white p-20 rounded-xl  ">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-12">
               {address && !isDisconnected && (
                 <div>
                   <button
@@ -291,7 +291,7 @@ const DeployWelcome: NextPage = () => {
                   )}
                 </div>
               </div>
-              <div className="order-first block w-full mt-12 aspect-square lg:mt-0">
+              <div className="order-first block w-full mt-12 aspect-square  ">
                 {address && !isDisconnected ? (
                   <div className=" w-full">
                     <ConnectButton />

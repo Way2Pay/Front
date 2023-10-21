@@ -10,7 +10,7 @@ import { disconnect } from "@wagmi/core";
 import { useConnext } from "../../hooks/useConnext";
 import CoinTable from "../CoinTable/CoinTable";
 import { desiredTokensByChainRev, chainNameToIdMap } from "../../utils/utils";
-
+import hero from "../../public/hero.png";
 type txData = {
   toAddress?: string;
   destination?: number;
@@ -291,7 +291,7 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
               ) : null}
               <img
                 className="object-cover object-center w-full mx-auto lg:ml-auto mt-10 "
-                src="hero.png"
+                src={hero.src}
               />
             </div>
           </div>
