@@ -23,7 +23,6 @@ export default async function handler(request, response) {
 
     await db.collection("Transactions").find({address:address}).toArray((err,res)=>{
       if(err) throw err
-      console.log("TX",res)
       return response.status(200).json({transactions:res})
     })
   } else if (request.method === "POST") {

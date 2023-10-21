@@ -10,6 +10,10 @@ import { disconnect } from "@wagmi/core";
 import { useConnext } from "../../hooks/useConnext";
 import CoinTable from "../CoinTable/CoinTable";
 import { desiredTokensByChainRev, chainNameToIdMap } from "../../utils/utils";
+import type { StaticImageData } from "next/image";
+import { getTxId } from "../../frontend-services/graphServices";
+import hero from "../../public/hero.png";
+import { formatAddress } from "../../utils/helpers";
 
 type txData = {
   toAddress?: string;
@@ -19,6 +23,7 @@ type txData = {
 };
 type RedirectProps = {
   txId?: string;
+  hero?: StaticImageData;
 };
 
 type ResponseTx = {
@@ -30,10 +35,11 @@ type ResponseTx = {
   _id: string;
   status?: string;
 };
-const RedirectWelcome = ({ txId }: RedirectProps) => {
+const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
   const { chain } = useNetwork();
   const [fetchedTokens, setFetchedTokens] = useState<Coin[]>([]);
   const [sendConnext] = useConnext();
+  const [transferId, setTransferId] = useState<string | null>("0x53d74aee258bd3107a48a7b609596a65bd7ddc0f2c30cec7836a7fe2e7912856");
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
@@ -43,6 +49,7 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
   const { switchNetwork } = useSwitchNetwork();
   const [txData, setTxData] = useState<txData | null>(null);
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
+  const [trxHash, setTrxHash] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTx = async () => {
@@ -65,7 +72,6 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
     };
     fetchTx();
   }, [txId]);
-  console.log("TXDATA", txData);
   useEffect(() => {
     if (address) {
       fetch("/api/userDetails/getTokensForAddress", {
@@ -79,7 +85,7 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log("FETCHEDTOKENS",data)
+          console.log("FETCHEDTOKENS", data);
           setFetchedTokens(data);
         })
         .catch((error) => {
@@ -87,6 +93,27 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
         });
     }
   }, [address]);
+
+  useEffect(() => {
+    const fetchTxData = async () => {
+      try {
+        if (trxHash && txData?.destination && chain) {
+          const Connexthash = await getTxId(trxHash, chain?.id);
+          console.log(Connexthash);
+          if (Connexthash) {
+            console.log("Received hash:", Connexthash);
+            setTransferId(Connexthash);
+          } else {
+            console.error("No hash received from getTxId");
+          }
+        }
+      } catch (error) {
+        console.error("There was an error fetching the hash:", error);
+      }
+    };
+
+    fetchTxData();
+  }, [trxHash]);
 
   const disconnectWallet = () => {
     disconnect();
@@ -99,19 +126,25 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
       !txData?.toAddress ||
       !txData?.destination ||
       !txData?.txId ||
-      !txData?.amount 
-      
+      !txData?.amount
     )
       return;
     const tokenAddress = desiredTokensByChainRev[selectedChain][selectedCoin];
-    console.log("CHECK ME FIRST",tokenAddress,desiredTokensByChainRev[selectedChain],selectedCoin)
-    await sendConnext(
+    // console.log(
+    //   "CHECK ME FIRST",
+    //   tokenAddress,
+    //   desiredTokensByChainRev[selectedChain],
+    //   selectedCoin
+    // );
+
+    const response = await sendConnext(
       tokenAddress,
       txData.txId,
       txData.destination,
       txData.toAddress,
       txData.amount
     );
+    setTrxHash(response || null);
   };
   const handleBackClick = () => {
     if (confirmedChain && !confirmedCoin) {
@@ -125,15 +158,15 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
     if (!selectedCoin || !selectedChain) return;
 
     setConfirmedCoin(selectedCoin);
-    console.log("CHAIN", selectedChain);
+    // console.log("CHAIN", selectedChain);
     // Find the selected token object based on the coin name
-    console.log("HEREZZZ", fetchedTokens);
+    // console.log("HEREZZZ", fetchedTokens);
 
     // Mapping from chain names to their respective chain IDs
 
     // Get the chain ID based on the chain name
     const selectedTokenChainId = chainNameToIdMap[selectedChain];
-    console.log("ASAS", selectedTokenChainId);
+    // console.log("ASAS", selectedTokenChainId);
     if (!selectedTokenChainId || !switchNetwork) {
       console.error("Chain ID not found for name:", selectedChain);
       return;
@@ -145,157 +178,188 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
 
   return (
     <div>
-      <section className="relative flex items-center w-full bg-black">
-        <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl ">
-          <div className="relative flex-col items-start m-auto align-middle bg-white p-20 rounded-xl  ">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
-              {address && !isDisconnected && (
-                <div>
-                  <button
-                    onClick={handleBackClick}
-                    className="absolute top-5 left-5 px-4 py-2 bg-gray-300 text-white rounded"
-                  >
-                    Back
-                  </button>
-                </div>
-              )}
+      <div className="relative items-center w-full px-5 py-24 mx-auto md:px-12 lg:px-16 max-w-7xl bg-white bg-opacity-80 ">
+        <div className="relative flex-col items-start m-auto align-middle  p-20 rounded-xl  ">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-24">
+            {address && !isDisconnected && (
+              <div>
+                <button
+                  onClick={handleBackClick}
+                  className="absolute top-5 left-5 px-4 py-2 bg-gray-300 text-white rounded"
+                >
+                  Back
+                </button>
+              </div>
+            )}
 
-              <div className="relative items-center gap-12 m-auto lg:inline-flex md:order-first">
-                <div className="max-w-xl text-center lg:text-left">
-                  {address && !isDisconnected && !confirmedCoin ? (
-                    <>
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={slideRight}
-                      >
-                        <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl  ">
-                          Choose!
-                        </p>
-                        <p className=" mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
-                          select coin for your transactions{" "}
-                        </p>
-                      </motion.div>
+            <div className="relative items-center gap-12 m-auto lg:inline-flex md:order-first">
+              <div className="max-w-xl text-center lg:text-left">
+                {address && !isDisconnected && !confirmedCoin ? (
+                  <>
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideRight}
+                    >
+                      <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl  ">
+                        Choose!
+                      </p>
+                      <p className=" mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                        select coin for your transactions{" "}
+                      </p>
+                    </motion.div>
 
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={slideUp}
-                      >
-                        <CoinTable
-                          coins={fetchedTokens}
-                          selectedCoin={selectedCoin}
-                          confirmedCoin={confirmedCoin}
-                          setSelectedCoin={setSelectedCoin}
-                          selectedChain={selectedChain}
-                          setSelectedChain={setSelectedChain}
-                          handleConfirmCoin={handleConfirmCoin}
-                        />
-                      </motion.div>
-                    </>
-                  ) : confirmedCoin ? (
-                    <>
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={slideRight}
-                      >
-                        <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl">
-                          All Set!
-                        </p>
-                        <p className="mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
-                          Ready to proceed with the payment?
-                        </p>
-                      </motion.div>
-
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={slideUp}
-                      >
-                        {" "}
-                        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                          <table className="w-full text-sm text-left text-gray-500 border-1 border-gray-200 rounded-xl">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                              <tr>
-                                <th scope="col" className="px-6 py-3">
-                                  Selected Chain
-                                </th>
-                                <th scope="col" className="px-6 py-3">
-                                  Selected Coin
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="rounded-xl bg-gray-200">
-                              <tr className="cursor-pointer  ">
-                                <td className="px-6 py-4">{selectedChain}</td>
-                                <td className="px-6 py-4">{confirmedCoin}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideUp}
+                    >
+                      <CoinTable
+                        coins={fetchedTokens}
+                        selectedCoin={selectedCoin}
+                        confirmedCoin={confirmedCoin}
+                        setSelectedCoin={setSelectedCoin}
+                        selectedChain={selectedChain}
+                        setSelectedChain={setSelectedChain}
+                        handleConfirmCoin={handleConfirmCoin}
+                      />
+                    </motion.div>
+                  </>
+                ) : !confirmedCoin ? (
+                  <>
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideRight}
+                    >
+                      <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
+                        Connect Your Wallet To Get Started..
+                      </p>
+                      <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
+                        Let&apos;s Set You Up!
+                      </p>
+                    </motion.div>
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideUp}
+                    >
+                      <div className="flex items-center space-x-6 mt-10 w-full ">
                         <button
-                          onClick={onConfirm}
-                          className="px-10 w-full  border-2 bg-slate-200 rounded-lg p-2 mt-10"
+                          onClick={openConnectModal}
+                          className="px-10 w-full  border-2 bg-slate-200 rounded-lg p-2"
                         >
-                          Pay
+                          Connect Wallet
                         </button>
-                      </motion.div>
-                    </>
-                  ) : (
-                    <>
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={slideRight}
+                      </div>
+                    </motion.div>
+                  </>
+                ) : !transferId ? (
+                  <>
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideRight}
+                    >
+                      <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl">
+                        All Set!
+                      </p>
+                      <p className="mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                        Ready to proceed with the payment?
+                      </p>
+                    </motion.div>
+
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideUp}
+                    >
+                      {" "}
+                      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <table className="w-full text-sm text-left text-gray-500 border-1 border-gray-200 rounded-xl">
+                          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                              <th scope="col" className="px-6 py-3">
+                                Selected Chain
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                Selected Coin
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="rounded-xl bg-gray-200">
+                            <tr className="cursor-pointer  ">
+                              <td className="px-6 py-4">{selectedChain}</td>
+                              <td className="px-6 py-4">{confirmedCoin}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <button
+                        onClick={onConfirm}
+                        className="px-10 w-full  border-2 bg-slate-200 rounded-lg p-2 mt-10"
                       >
-                        <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
-                          Connect Your Wallet To Get Started..
-                        </p>
-                        <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
-                          Let&apos;s Set You Up!
-                        </p>
-                      </motion.div>
-                      <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        variants={slideUp}
-                      >
-                        <div className="flex items-center space-x-6 mt-10 w-full ">
-                          <button
-                            onClick={openConnectModal}
-                            className="px-10 w-full  border-2 bg-slate-200 rounded-lg p-2"
-                          >
-                            Connect Wallet
-                          </button>
-                        </div>
-                      </motion.div>
-                    </>
-                  )}
+                        Pay
+                      </button>
+                    </motion.div>
+                  </>
+                ) : (
+                  <>
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={slideRight}
+                  >
+                    <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl">
+                      Done!
+                    </p>
+                    
+                  </motion.div>
+
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={slideUp}
+                  >
+                    {" "}
+                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg px-6 py-6">
+                    <p className="mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                      Here is your Transaction on Connext
+                    </p>
+                    <p className="text-lg text-gray-700 leading-relaxed">{formatAddress(transferId,10,10)}</p>
+                    <p className="mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                      Click below to see check your transaction on Connext Explorer
+                    </p>
+                    <a className="underline text-blue-800 hover:text-blue-600" href={"https://testnet.connextscan.io/tx/"+transferId}>Go To Connext</a>
+                    </div>
+                    
+                  </motion.div>
+                </>
+                )}
+              </div>
+            </div>
+            <div className="order-first block w-full mt-12 aspect-square lg:mt-0">
+              {address && !isDisconnected ? (
+                <div className=" absolute mb-10">
+                  <ConnectButton />
                 </div>
-              </div>
-              <div className="order-first block w-full mt-12 aspect-square lg:mt-0">
-                {address && !isDisconnected ? (
-                  <div className=" absolute mb-10">
-                    <ConnectButton />
-                  </div>
-                ) : null}
-                <img
-                  className="object-cover object-center w-full mx-auto bg-gray-300 lg:ml-auto mt-10 "
-                  alt="hero"
-                  src="../images/placeholders/square2.svg"
-                />
-              </div>
+              ) : null}
+              <img
+                className="object-cover object-center w-full mx-auto lg:ml-auto mt-10 "
+                src={hero?.src}
+              />
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

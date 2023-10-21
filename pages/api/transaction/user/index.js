@@ -12,17 +12,16 @@ export default async function handler(request, response) {
 
 
   if (request.method === "GET") {
-    const token = getAuthToken(request);
+    const token =await getAuthToken(request);
     const validity = verifyToken(token);
 
     if (!validity.authorized)
       return response.status(401).json({ message: validity.message });
-    console.log(validity);
+    console.log(validity,"HER");
     const {address}=validity.payload;
 
-    db.collection("Transactions").find({buyer:address}).toArray((err,res)=>{
+    await db.collection("Transactions").find({buyer:address}).toArray(async(err,res)=>{
       if(err) throw err
-      console.log("TX",res)
       return response.status(200).json({transactions:res})
     })
   }  else {

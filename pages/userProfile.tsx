@@ -3,18 +3,29 @@ import User from "../components/UserProfile/User";
 import Navbar from "../components/HomePage/Navbar";
 import { useRecoilState } from "recoil";
 import { authState } from "../state/atoms";
-import { useAccount, useWalletClient } from "wagmi";
+import {getUserProfile} from "../frontend-services/profileServices"
+import { useWalletClient } from "wagmi";
 import { useRouter } from "next/router";
 import UserData from "../components/UserProfile/UserData";
 import { PushContext } from "./_app";
 import { PushAPI } from "@pushprotocol/restapi";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { getUserInfo, updateUserInfo } from "../frontend-services/pushServices";
+
+
+type Profile={
+  address:string;
+  transactions?:string[];
+  deployements?:string[];
+  _id:string;
+  }
+
+  
 const UserProfile: React.FC = () => {
   const [userData, setUserData] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [auth, setAuth] = useRecoilState(authState);
-  const { address } = useAccount();
+  const [profile,setProfile]=useState<Profile|undefined>();
   const router = useRouter();
   const [nickname, setNickname] = useState("");
   const [description, setDescription] = useState("");
@@ -49,32 +60,36 @@ const UserProfile: React.FC = () => {
     }
   }, [client]);
   useEffect(() => {
-    setLoading(true);
-    if (!auth.accessToken) {
-      const token = localStorage.getItem("accessToken");
+   setLoading(true);
+    const token=auth.accessToken?auth.accessToken:localStorage.getItem("accessToken");
       if (token) {
+        if(!auth.accessToken)
         setAuth({
           ...auth,
           accessToken: token,
         });
+        fetchData(token);
       } else {
         router.push("/login");
         return;
       }
-    }
-
-    if (auth.accessToken) {
-      //fetchData();
-    }
   }, [auth.accessToken, router]);
 
+  const fetchData=async (token:string)=>{
+
+    if(!process.env.NEXT_PUBLIC_API_URL)
+    return;
+    const result = await getUserProfile(process.env.NEXT_PUBLIC_API_URL+"/profile",token)
+    console.log("HE23123",result)
+    setProfile(result.data)
+  }
   const updateUserData = async () => {
     const requestBody = {
       nickname: nickname,
       desc: description,
     };
     let data = await updateUserInfo(userPPP, undefined, nickname, description);
-    fetchUserData(userPPP)
+    fetchUserData(userPPP);
     setEditing(false); // Hide the editing form
     // Reload the data after successfully updating
   };
@@ -92,7 +107,7 @@ const UserProfile: React.FC = () => {
           onSave={updateUserData}
         />
       ) : (
-        <UserData data={userData} onEdit={() => setEditing(true)} />
+        <UserData data={userData} profile={profile} onEdit={() => setEditing(true)} />
       )}
     </div>
   );

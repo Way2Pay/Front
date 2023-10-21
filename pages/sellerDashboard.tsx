@@ -9,6 +9,7 @@ import { useRecoilState } from "recoil";
 import Navbar from "../components/HomePage/Navbar";
 import DataTable from "../components/DashBoard/DataTable";
 import TransactionModal from "../components/DashBoard/TransactionModal";
+import ContractModal from "../components/DashBoard/ContractModal";
 import Coins from "../components/DashBoard/Coins";
 import { useWalletClient } from "wagmi";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
@@ -16,11 +17,16 @@ import { STREAM } from "@pushprotocol/restapi/src/lib/pushstream/pushStreamTypes
 import { PushContext } from "./_app";
 const SellerDashBoard: NextPage = () => {
   const router = useRouter();
+  const [selectedContract, setSelectedContract] = useState<Deployements | null>(
+    null
+  );
 
   const [auth, setAuth] = useRecoilState(authState);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [hasFetchedTransactions, setHasFetchedTransactions] = useState(false);
-  const [deployedContracts, setDeployedContracts] = useState<Deployements[]>([]);
+  const [deployedContracts, setDeployedContracts] = useState<Deployements[]>(
+    []
+  );
   const { data: client } = useWalletClient();
   const { userPPP, setUserPPP } = useContext(PushContext);
   const handleSwitchToSellerDashboard = () => {
@@ -80,6 +86,13 @@ const SellerDashBoard: NextPage = () => {
     }
   }, [auth.accessToken, router]);
 
+  const handleContractClick = (contract: Deployements) => {
+    setSelectedContract(contract);
+  };
+
+  const handleCloseContractModal = () => {
+    setSelectedContract(null);
+  };
   const fetchDeployedContracts = async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deploy`, {
@@ -99,7 +112,7 @@ const SellerDashBoard: NextPage = () => {
         return;
       } else if (res.status === 200) {
         const data = await res.json();
-        console.log("GGEE",data)
+        console.log("GGEE", data);
         setDeployedContracts(data.deployements); // Assuming the API returns an object with a contracts key
       } else {
       }
@@ -136,6 +149,13 @@ const SellerDashBoard: NextPage = () => {
         </div>
       </div>
 
+      {selectedContract && (
+        <ContractModal
+          contract={selectedContract}
+          onClose={handleCloseContractModal}
+        />
+      )}
+
       {hasFetchedTransactions && transactions.length > 0 && (
         <div>
           <Coins mode="earned" />
@@ -143,6 +163,7 @@ const SellerDashBoard: NextPage = () => {
             transactions={transactions}
             deployedContracts={deployedContracts}
             onTransactionClick={handleTransactionClick}
+            onContractClick={handleContractClick}
             showDeployedContracts={true} // Set to false for UserDashboard
           />
         </div>

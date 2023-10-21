@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { authState, initialAuthState } from "../../state/atoms";
 import { useRecoilState } from "recoil";
 import Link from "next/link";
@@ -8,18 +8,26 @@ const Navbar: React.FC = () => {
   const [auth, setAuth] = useRecoilState(authState);
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
+  const pathName = usePathname();
+  console.log("ROute",router,pathName)
   const [isLogged, setIsLogged] = useState(false);
   useEffect(() => {
+    const token = auth.accessToken?auth.accessToken:localStorage.getItem("accessToken")
+    console.log("HEREAANAV",token)
     if (localStorage.getItem("accessToken")?.length !== 0 || auth.accessToken) {
       setIsLogged(true);
     }
   }, []);
   const handleClick = () => {
+    console.log("HERELOGGED",isLogged)
     if (isLogged) {
       localStorage.setItem("accessToken", "");
+      console.log("NEWVALUE",localStorage.getItem("accessToken"))
       setAuth(initialAuthState);
-      router.push("");
+      if(pathName==="/")
+      router.refresh()
+      else
+      router.push("/");
     } else router.push("/login");
   };
   return (
