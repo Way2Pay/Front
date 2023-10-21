@@ -16,19 +16,19 @@ export type Deployements = {
 };
 
 const formatAddress = (address: string) => {
-  if(!address) return "ABC"
+  if (!address) return "ABC";
   if (address?.length <= 6) return address; // Return the original address if it's too short
   return `${address.substring(0, 2)}...${address.substring(
     address.length - 4
   )}`;
 };
 
-
 type DataTableProps = {
   transactions: Transaction[];
   deployedContracts?: Deployements[]; // Make this optional
   onTransactionClick: (transaction: Transaction) => void;
   showDeployedContracts?: boolean; // New prop
+  onContractClick: (contract: Deployements) => void;
 };
 
 const DataTable: React.FC<DataTableProps> = ({
@@ -36,6 +36,7 @@ const DataTable: React.FC<DataTableProps> = ({
   onTransactionClick,
   deployedContracts = [],
   showDeployedContracts = true, // Default value is true
+  onContractClick,
 }) => {
   return (
     <>
@@ -111,13 +112,13 @@ const DataTable: React.FC<DataTableProps> = ({
                             TRXID
                           </th>
                           <th scope="col" className="px-6 py-3">
-                            COINS
+                            Contract Address
                           </th>
                           <th scope="col" className="px-6 py-3">
-                            VALUE
+                            Chain ID
                           </th>
                           <th scope="col" className="px-6 py-3">
-                            DATE
+                            Owner
                           </th>
                         </tr>
                       </thead>
@@ -125,7 +126,8 @@ const DataTable: React.FC<DataTableProps> = ({
                         {deployedContracts.map((contract) => (
                           <tr
                             key={contract._id}
-                            onClick={() => {}}
+                            onClick={() => onContractClick(contract)}
+                            className="cursor-pointer hover:bg-gray-100"
                           >
                             <td className="px-6 py-4">
                               {formatAddress(contract._id)}
