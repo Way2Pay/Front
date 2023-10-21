@@ -9,8 +9,11 @@ import {
 const GridFeature: React.FC = () => {
   return (
     <div>
-      <section className="flex items-center w-full bg-white">
+      <section className="flex items-center w-full ">
         <div className="relative items-center w-full px-5 py-12 mx-auto md:px-12 lg:px-20 max-w-7xl">
+          <div className=" text-4xl font-bold  text-center text-gray-600">
+            How It Works{" "}
+          </div>
           <div className="grid grid-cols-2 gap-6 py-12 md:grid-cols-3">
             <motion.div
               initial="hidden"
@@ -20,28 +23,19 @@ const GridFeature: React.FC = () => {
             >
               <figure>
                 <img
-                  className="w-full bg-gray-200 "
-                  src="../images/placeholders/square3.svg"
+                  className="w-full  "
+                  src="step1.png"
                   alt=""
                   width="1310"
                   height="873"
                 />
 
                 <p className="mt-5 text-lg font-medium leading-6 text-black">
-                  Pink dreams
+                  Step 1
                 </p>
                 <p className="mt-3 text-base text-gray-500">
-                  Your design portfolio website shouldn’t just be a portfolio,
-                  it should also be a sales tool.
+                  Connect your wallet
                 </p>
-                <div className="flex gap-3 mt-10 justify-left">
-                  <a
-                    className="inline-flex items-center justify-center text-sm font-semibold text-black duration-200 hover:text-blue-500 focus:outline-none focus-visible:outline-gray-600"
-                    href="#"
-                  >
-                    <span> Read more &nbsp; → </span>
-                  </a>
-                </div>
               </figure>
             </motion.div>
             <motion.div
@@ -52,28 +46,19 @@ const GridFeature: React.FC = () => {
             >
               <figure>
                 <img
-                  className="w-full bg-gray-200 "
-                  src="../images/placeholders/square2.svg"
+                  className="w-full  "
+                  src="step2.png"
                   alt=""
                   width="1310"
                   height="873"
                 />
 
                 <p className="mt-5 text-lg font-medium leading-6 text-black">
-                  Lavender ender
+                  Step 2
                 </p>
                 <p className="mt-3 text-base text-gray-500">
-                  Your design portfolio website shouldn’t just be a portfolio,
-                  it should also be a sales tool.
+                  Choose the chain you want to deploy on
                 </p>
-                <div className="flex gap-3 mt-10 justify-left">
-                  <a
-                    className="inline-flex items-center justify-center text-sm font-semibold text-black duration-200 hover:text-blue-500 focus:outline-none focus-visible:outline-gray-600"
-                    href="#"
-                  >
-                    <span> Read more &nbsp; → </span>
-                  </a>
-                </div>
               </figure>
             </motion.div>
             <motion.div
@@ -84,28 +69,19 @@ const GridFeature: React.FC = () => {
             >
               <figure>
                 <img
-                  className="w-full bg-gray-200 "
-                  src="../images/placeholders/square4.svg"
+                  className="w-full"
+                  src="step3.png"
                   alt=""
                   width="1310"
                   height="873"
                 />
 
                 <p className="mt-5 text-lg font-medium leading-6 text-black">
-                  Smurf life
+                  Step 3
                 </p>
                 <p className="mt-3 text-base text-gray-500">
-                  Your design portfolio website shouldn’t just be a portfolio,
-                  it should also be a sales tool.
+                  Choose the coin you want to recieve payments in
                 </p>
-                <div className="flex gap-3 mt-10 justify-left">
-                  <a
-                    className="inline-flex items-center justify-center text-sm font-semibold text-black duration-200 hover:text-blue-500 focus:outline-none focus-visible:outline-gray-600"
-                    href="#"
-                  >
-                    <span> Read more &nbsp; → </span>
-                  </a>
-                </div>
               </figure>
             </motion.div>
           </div>
