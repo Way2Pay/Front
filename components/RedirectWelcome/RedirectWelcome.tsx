@@ -10,7 +10,9 @@ import { disconnect } from "@wagmi/core";
 import { useConnext } from "../../hooks/useConnext";
 import CoinTable from "../CoinTable/CoinTable";
 import { desiredTokensByChainRev, chainNameToIdMap } from "../../utils/utils";
-import { StaticImageData } from "next/image";
+import type { StaticImageData } from "next/image";
+
+import hero from "../../public/hero.png";
 
 type txData = {
   toAddress?: string;
@@ -20,7 +22,7 @@ type txData = {
 };
 type RedirectProps = {
   txId?: string;
-  hero?:StaticImageData;
+  hero?: StaticImageData;
 };
 
 type ResponseTx = {
