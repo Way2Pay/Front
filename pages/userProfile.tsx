@@ -49,7 +49,7 @@ const UserProfile: React.FC = () => {
     }
   }, [client]);
   useEffect(() => {
-    setLoading(true);
+    // setLoading(true);
     if (!auth.accessToken) {
       const token = localStorage.getItem("accessToken");
       if (token) {
@@ -74,7 +74,7 @@ const UserProfile: React.FC = () => {
       desc: description,
     };
     let data = await updateUserInfo(userPPP, undefined, nickname, description);
-    fetchUserData(userPPP)
+    fetchUserData(userPPP);
     setEditing(false); // Hide the editing form
     // Reload the data after successfully updating
   };

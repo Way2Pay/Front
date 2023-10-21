@@ -124,6 +124,7 @@ const UserDashBoard: NextPage = () => {
     setSelectedTransaction(transaction);
   };
 
+  const handleclose = () => {};
   const handleCloseModal = () => {
     setSelectedTransaction(null);
   };
@@ -149,6 +150,7 @@ const UserDashBoard: NextPage = () => {
             transactions={transactions}
             onTransactionClick={handleTransactionClick}
             showDeployedContracts={false} // Set to false for UserDashboard
+            onContractClick={handleclose}
           />
         </div>
       )}
