@@ -24,7 +24,7 @@ const UserData: React.FC<UserDataProps> = ({ data, onEdit, profile }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 relative ">
       <div className="bg-white p-10 rounded-xl shadow-lg content-center w-2/6 h-[60vh] space-y-6 mx-5">
-        <h2 className="text-3xl font-bold text-center self-center mb-4 text-gray-800">Account</h2>
+        <h2 className="text-3xl font-mono font-bold text-center self-center mb-4 text-gray-800">Account</h2>
         <div className="flex w-full flex-row">
           <h4 className="text-xl self-start font-bold w-1/2 text-center mb-4 text-gray-800">Address :</h4>
           <p className="text-lg text-gray-700 mr-4 w-1/2 text-center leading-relaxed">{formatAddress(profile?.address)}</p>
@@ -41,7 +41,7 @@ const UserData: React.FC<UserDataProps> = ({ data, onEdit, profile }) => {
 
       </div>
       <div className="bg-white p-10 rounded-xl shadow-lg w-2/6 h-[60vh] space-y-6 mx-5">
-        <h2 className="text-3xl font-bold text-center self-center mb-4 text-gray-800">Push Profile</h2>
+        <h2 className="text-3xl font-mono font-bold text-center self-center mb-4 text-gray-800">Push Profile</h2>
         <div className="flex w-full flex-row">
           <h4 className="text-xl self-start font-bold w-1/2 text-center mb-4 text-gray-800">Name :</h4>
           <p className="text-lg text-gray-700 mr-4 w-1/2 text-center leading-relaxed">{data.name}</p>
