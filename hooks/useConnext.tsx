@@ -46,12 +46,12 @@ export const useConnext = () => {
             9991: {
               providers: [chainIdToRPC(domainToChainID("9991"))],
             },
-            1735356532:{
-              providers: [chainIdToRPC(domainToChainID("1735356532"))]
-            }
+            1735356532: {
+              providers: [chainIdToRPC(domainToChainID("1735356532"))],
+            },
           },
         };
-        console.log("FLAG 1")
+        console.log("FLAG 1");
         const { sdkBase: data, sdkUtils: data2 } = await create(sdkConfig);
         setSDKBase(data);
       }
@@ -65,15 +65,15 @@ export const useConnext = () => {
     txId: string,
     destination: number,
     toAddress: string,
-    amount:number,
+    amount: number
   ) {
-    console.log("FLAG2",token)
+    console.log("FLAG2", token);
     let abiData = require("../destabi.json");
     const poolFee = 3000;
 
     const forwardCallData = ethers.utils.defaultAbiCoder.encode(
       ["string"],
-      [ txId]
+      [txId]
     );
 
     if (!chain) return;
@@ -84,7 +84,7 @@ export const useConnext = () => {
       })
     )?.toString();
 
-    console.log("RELAYER",relayerFee)
+    console.log("RELAYER", relayerFee);
     const xcallParams = {
       origin: chainToDomainId(chain.id), // send from Mumbai
       destination: chainToDomainId(destination), // to Goerli
@@ -96,11 +96,16 @@ export const useConnext = () => {
       relayerFee: relayerFee, // fee paid to relayers
     };
 
-    console.log("AHAS",chainToDomainId(chain.id),token,parseEther(amount.toString()).toString())
+    console.log(
+      "AHAS",
+      chainToDomainId(chain.id),
+      token,
+      parseEther(amount.toString()).toString()
+    );
     const approveTxReq = await sdkBase?.approveIfNeeded(
       chainToDomainId(chain.id),
       token,
-      parseEther(amount.toString()).toString(),
+      parseEther(amount.toString()).toString()
     );
 
     function walletClientToSigner(walletClient: WalletClient) {
@@ -132,6 +137,7 @@ export const useConnext = () => {
     const xcallTxReceipt = await signer?.sendTransaction(xcallTxReq);
     console.log(xcallTxReceipt);
     await xcallTxReceipt?.wait();
+    return xcallTxReceipt?.hash;
   }
 
   return [sendConnext];

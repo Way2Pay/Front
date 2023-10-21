@@ -11,7 +11,7 @@ import { useConnext } from "../../hooks/useConnext";
 import CoinTable from "../CoinTable/CoinTable";
 import { desiredTokensByChainRev, chainNameToIdMap } from "../../utils/utils";
 import type { StaticImageData } from "next/image";
-
+import { getTxId } from "../../frontend-services/graphServices";
 import hero from "../../public/hero.png";
 
 type txData = {
@@ -47,6 +47,7 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
   const { switchNetwork } = useSwitchNetwork();
   const [txData, setTxData] = useState<txData | null>(null);
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
+  const [trxHash, setTrxHash] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTx = async () => {
@@ -92,6 +93,26 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
     }
   }, [address]);
 
+  useEffect(() => {
+    const fetchTxData = async () => {
+      try {
+        if (trxHash && txData?.destination) {
+          const Connexthash = await getTxId(trxHash, txData.destination);
+          console.log(Connexthash);
+          if (Connexthash) {
+            console.log("Received hash:", Connexthash);
+          } else {
+            console.error("No hash received from getTxId");
+          }
+        }
+      } catch (error) {
+        console.error("There was an error fetching the hash:", error);
+      }
+    };
+
+    fetchTxData();
+  }, [trxHash]);
+
   const disconnectWallet = () => {
     disconnect();
   };
@@ -107,19 +128,21 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
     )
       return;
     const tokenAddress = desiredTokensByChainRev[selectedChain][selectedCoin];
-    console.log(
-      "CHECK ME FIRST",
-      tokenAddress,
-      desiredTokensByChainRev[selectedChain],
-      selectedCoin
-    );
-    await sendConnext(
+    // console.log(
+    //   "CHECK ME FIRST",
+    //   tokenAddress,
+    //   desiredTokensByChainRev[selectedChain],
+    //   selectedCoin
+    // );
+
+    const response = await sendConnext(
       tokenAddress,
       txData.txId,
       txData.destination,
       txData.toAddress,
       txData.amount
     );
+    setTrxHash(response || null);
   };
   const handleBackClick = () => {
     if (confirmedChain && !confirmedCoin) {
@@ -133,15 +156,15 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
     if (!selectedCoin || !selectedChain) return;
 
     setConfirmedCoin(selectedCoin);
-    console.log("CHAIN", selectedChain);
+    // console.log("CHAIN", selectedChain);
     // Find the selected token object based on the coin name
-    console.log("HEREZZZ", fetchedTokens);
+    // console.log("HEREZZZ", fetchedTokens);
 
     // Mapping from chain names to their respective chain IDs
 
     // Get the chain ID based on the chain name
     const selectedTokenChainId = chainNameToIdMap[selectedChain];
-    console.log("ASAS", selectedTokenChainId);
+    // console.log("ASAS", selectedTokenChainId);
     if (!selectedTokenChainId || !switchNetwork) {
       console.error("Chain ID not found for name:", selectedChain);
       return;
