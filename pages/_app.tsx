@@ -14,6 +14,7 @@ import {
   base,
   zora,
   polygonMumbai,
+  optimismGoerli,
 } from "wagmi/chains";
 import {
   RecoilRoot,
@@ -31,6 +32,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     polygon,
     optimism,
     arbitrum,
+    optimismGoerli,
     base,
     zora,
     goerli,

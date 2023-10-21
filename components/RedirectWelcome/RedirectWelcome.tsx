@@ -33,7 +33,7 @@ type ResponseTx = {
 const RedirectWelcome = ({ txId }: RedirectProps) => {
   const { chain } = useNetwork();
   const [fetchedTokens, setFetchedTokens] = useState<Coin[]>([]);
-  const { sendConnext } = useConnext();
+  const [sendConnext] = useConnext();
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
@@ -79,6 +79,7 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log("FETCHEDTOKENS",data)
           setFetchedTokens(data);
         })
         .catch((error) => {
@@ -98,17 +99,18 @@ const RedirectWelcome = ({ txId }: RedirectProps) => {
       !txData?.toAddress ||
       !txData?.destination ||
       !txData?.txId ||
-      !txData?.amount ||
-      !convertedAmount
+      !txData?.amount 
+      
     )
       return;
     const tokenAddress = desiredTokensByChainRev[selectedChain][selectedCoin];
+    console.log("CHECK ME FIRST",tokenAddress,desiredTokensByChainRev[selectedChain],selectedCoin)
     await sendConnext(
       tokenAddress,
       txData.txId,
       txData.destination,
       txData.toAddress,
-      convertedAmount
+      txData.amount
     );
   };
   const handleBackClick = () => {
