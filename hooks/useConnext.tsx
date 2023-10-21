@@ -6,7 +6,7 @@ import { BigNumber, ethers } from "ethers";
 import { chainIdToRPC, domainToChainID, chainToDomainId } from "../utils/utils";
 import { SdkBase, SdkConfig, create } from "@connext/sdk";
 import "../destabi.json";
-import { WalletClient } from "viem";
+import { WalletClient, parseEther } from "viem";
 
 export const useConnext = () => {
   const [sdkBase, setSDKBase] = useState<SdkBase>();
@@ -46,8 +46,12 @@ export const useConnext = () => {
             9991: {
               providers: [chainIdToRPC(domainToChainID("9991"))],
             },
+            1735356532:{
+              providers: [chainIdToRPC(domainToChainID("1735356532"))]
+            }
           },
         };
+        console.log("FLAG 1")
         const { sdkBase: data, sdkUtils: data2 } = await create(sdkConfig);
         setSDKBase(data);
       }
@@ -63,11 +67,12 @@ export const useConnext = () => {
     toAddress: string,
     amount:number,
   ) {
+    console.log("FLAG2",token)
     let abiData = require("../destabi.json");
     const poolFee = 3000;
 
     const forwardCallData = ethers.utils.defaultAbiCoder.encode(
-      [ "string"],
+      ["string"],
       [ txId]
     );
 
@@ -79,21 +84,23 @@ export const useConnext = () => {
       })
     )?.toString();
 
+    console.log("RELAYER",relayerFee)
     const xcallParams = {
       origin: chainToDomainId(chain.id), // send from Mumbai
       destination: chainToDomainId(destination), // to Goerli
       to: toAddress, // the address that should receive the funds on destination
       asset: token, // address of the token contract
-      amount: amount, // amount of tokens to transfer
+      amount: parseEther(amount.toString()).toString(), // amount of tokens to transfer
       slippage: 500, // the maximum amount of slippage the user will accept in BPS (e.g. 30 = 0.3%)
       callData: forwardCallData, // empty calldata for a simple transfer (byte-encoded)
       relayerFee: relayerFee, // fee paid to relayers
     };
 
+    console.log("AHAS",chainToDomainId(chain.id),token,parseEther(amount.toString()).toString())
     const approveTxReq = await sdkBase?.approveIfNeeded(
       chainToDomainId(chain.id),
       token,
-      amount.toString(),
+      parseEther(amount.toString()).toString(),
     );
 
     function walletClientToSigner(walletClient: WalletClient) {
@@ -121,11 +128,11 @@ export const useConnext = () => {
 
     const xcallTxReq = await sdkBase?.xcall(xcallParams)!;
     console.log(xcallTxReq);
-    xcallTxReq.gasLimit = BigNumber.from("20000000");
+    xcallTxReq.gasLimit = BigNumber.from("400000");
     const xcallTxReceipt = await signer?.sendTransaction(xcallTxReq);
     console.log(xcallTxReceipt);
     await xcallTxReceipt?.wait();
   }
 
-  return { sendConnext };
+  return [sendConnext];
 };

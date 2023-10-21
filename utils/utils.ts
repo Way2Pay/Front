@@ -19,6 +19,7 @@ export const chainIdToRPC = (chainId: number) => {
     42161: "https://arb-mainnet-public.unifra.io",
     56: "https://bsc.rpc.blxrbdn.com",
     5: "https://goerli.drpc.org/",
+    420:"https://goerli.optimism.io",
   };
 
   return chainToRPC[chainId];
@@ -32,6 +33,8 @@ export const domainToChainID = (domain: string) => {
     "6450786": 56,
     "6648936": 1,
     "1735353714": 5,
+    "9991":80001,
+    "1735356532":420,
   };
   return domainToChain[domain];
 };
@@ -44,6 +47,8 @@ export const chainToDomainId = (chainId: number) => {
     42161: "1634886255",
     56: "6450786",
     5: "1735353714",
+    80001:"9991",
+    420: "1735356532"
   };
   return domainToChain[chainId];
 };
@@ -78,6 +83,7 @@ export const tokenSymbolToName: { [key: string]: string } = {
   USDC: "USD Coin",
   WETH: "Wrapped Ether",
   TEST: "Test Token",
+  TWETH: "Test Wrapped Ether"
 };
 
 export const chainToChainName:{[key:string]:string}={
@@ -91,11 +97,12 @@ export const desiredTokensByChain: { [key: string]: CoinAddresses } = {
     "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2": "USDT",
     "0xc199807AF4fEDB02EE567Ed0FeB814A077de4802": "WETH",
     "0xeDb95D8037f769B72AAab41deeC92903A98C9E16": "TEST",
+    "0x1E5341E4b7ed5D0680d9066aac0396F0b1bD1E69": "TWETH",
   },
   ETH_GOERLI: {
     "0x9FD21bE27A2B059a288229361E2fA632D8D2d074": "USDC",
     "0x65E2fe35C30eC218b46266F89847c63c2eDa7Dc7": "USDT",
-    "0xCCa7d1416518D095E729904aAeA087dBA749A4dC": "WETH",
+    "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6": "WETH",
     "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1": "TEST",
   },
   OPT_GOERLI: {
@@ -112,11 +119,12 @@ export const desiredTokensByChainRev: { [key: string]: CoinAddresses } = {
     USDT: "0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2",
     WETH: "0xc199807AF4fEDB02EE567Ed0FeB814A077de4802",
     TEST: "0xeDb95D8037f769B72AAab41deeC92903A98C9E16",
+    TWETH: "0x1E5341E4b7ed5D0680d9066aac0396F0b1bD1E69",
   },
   ETH_GOERLI: {
     USDC: "0x9FD21bE27A2B059a288229361E2fA632D8D2d074",
     USDT: "0x65E2fe35C30eC218b46266F89847c63c2eDa7Dc7",
-    WETH: "0xCCa7d1416518D095E729904aAeA087dBA749A4dC",
+    WETH: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
     TEST: "0x7ea6eA49B0b0Ae9c5db7907d139D9Cd3439862a1",
   },
   OPT_GOERLI: {

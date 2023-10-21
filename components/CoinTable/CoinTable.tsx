@@ -61,7 +61,7 @@ const CoinTable: React.FC<CoinTableProps> = ({
                           : "bg-white"
                       }`}
                       onClick={() => {
-                        setSelectedCoin(token.name), setSelectedChain(chain);
+                        setSelectedCoin(token.symbol), setSelectedChain(chain);
                       }}
                     >
                       <td className="px-6 py-4">{token.name}</td>

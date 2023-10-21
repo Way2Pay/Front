@@ -16,7 +16,8 @@ export type Deployements = {
 };
 
 const formatAddress = (address: string) => {
-  if (address.length <= 6) return address; // Return the original address if it's too short
+  if(!address) return "ABC"
+  if (address?.length <= 6) return address; // Return the original address if it's too short
   return `${address.substring(0, 2)}...${address.substring(
     address.length - 4
   )}`;

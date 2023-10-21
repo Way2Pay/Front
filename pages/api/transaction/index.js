@@ -1,3 +1,4 @@
+
 import clientPromise from "../../../db/database";
 import {
   getToken,
@@ -5,7 +6,7 @@ import {
   verifyToken,
 } from "../../../backend-services/auth";
 export default async function handler(request, response) {
-  if (request.method === "OPTIONS") return response.headers({'Access-Control-Allow-Origin': '*'}).status(200).body({ OK });
+  if (request.method === "OPTIONS") return response.status(200).send("OK");
 
   const client = await clientPromise;
   const db = client.db("PayDB");
@@ -20,7 +21,7 @@ export default async function handler(request, response) {
     console.log(validity);
     const {address}=validity.payload;
 
-    db.collection("Transactions").find({address:address}).toArray((err,res)=>{
+    await db.collection("Transactions").find({address:address}).toArray((err,res)=>{
       if(err) throw err
       console.log("TX",res)
       return response.status(200).json({transactions:res})
@@ -45,14 +46,13 @@ export default async function handler(request, response) {
               { address: address, amount: amount, status: "initiated", createTime:timestamp,chainId:chainId, contractAddress },
               async (err, res) => {
                 if (err) throw err;
-                console.log("HERE", res.insertedId);
-                id = res.insertedId;
+                id = await res.insertedId;
                 await db
                   .collection("Users")
                   .updateOne(
                     myquery,
                     { $push: { transactions: id } },
-                    (err, res) => {
+                    async (err, res) => {
                       if (err) throw err;
                       console.log(id);
                       return response.status(200).json({ id: id });
@@ -63,6 +63,6 @@ export default async function handler(request, response) {
         }
       });
   } else {
-    response.status(400).json({ message: "Incorrect Method" });
+    return response.status(400).json({ message: "Incorrect Method" });
   }
 }

@@ -28,7 +28,7 @@ async function verifyResponse(sismoConnectResponse) {
 }
 
 export default async function handler(request, response) {
-  if (request.method === "OPTIONS") return response.status(200).body({ OK });
+  if (request.method === "OPTIONS") return response.status(200).body("ok");
   else if (request.method === "POST") {
     const {data,userAddress} = await request.body;
     console.log("Data",data)
