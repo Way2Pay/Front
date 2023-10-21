@@ -115,7 +115,7 @@ export const desiredTokensByChain: { [key: string]: CoinAddresses } = {
 
 export const chainIdToSubgraph:{[key:number]:string}={
   80001:"https://api.thegraph.com/subgraphs/name/connext/nxtp-amarok-runtime-v0-mumbai",
-  420:"https://api.thegraph.com/subgraphs/name/connext/amarok-runtime-v0-opt-goerli/graphql",
+  420:"https://api.thegraph.com/subgraphs/name/connext/amarok-runtime-v0-opt-goerli",
   5: "https://api.thegraph.com/subgraphs/name/connext/nxtp-amarok-runtime-v0-goerli"
 }
 export const desiredTokensByChainRev: { [key: string]: CoinAddresses } = {
