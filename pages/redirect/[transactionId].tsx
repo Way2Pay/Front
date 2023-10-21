@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import RedirectWelome from "../../components/RedirectWelcome/RedirectWelcome";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-
+import myHero from "../../public/hero.png"
 
 
 const Redirect: NextPage = () => {
@@ -17,7 +17,7 @@ useEffect(()=>{
 },[router.query.transactionId])
   return (
     <>
-      <RedirectWelome txId={txId}/>
+      <RedirectWelome txId={txId} hero={myHero}/>
     </>
   );
 };
