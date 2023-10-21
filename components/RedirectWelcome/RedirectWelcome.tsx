@@ -96,8 +96,8 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
   useEffect(() => {
     const fetchTxData = async () => {
       try {
-        if (trxHash && txData?.destination) {
-          const Connexthash = await getTxId(trxHash, txData.destination);
+        if (trxHash && txData?.destination&&chain) {
+          const Connexthash = await getTxId(trxHash, chain?.id);
           console.log(Connexthash);
           if (Connexthash) {
             console.log("Received hash:", Connexthash);
