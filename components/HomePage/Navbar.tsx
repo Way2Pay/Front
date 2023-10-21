@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { authState, initialAuthState } from "../../state/atoms";
 import { useRecoilState } from "recoil";
 import Link from "next/link";
+import ProfileImage from "../../public/profile.png"
 
 const Navbar: React.FC = () => {
   const [auth, setAuth] = useRecoilState(authState);
@@ -104,7 +105,7 @@ const Navbar: React.FC = () => {
               {isLogged ? "Sign Out" : "Sign in"}
             </button>
             <Link href="/userProfile">
-              <img src="Profile.png" className="w-12 cursor-pointer" />
+              <img src={ProfileImage.src} className="w-12 cursor-pointer" />
             </Link>
           </div>
         </nav>
