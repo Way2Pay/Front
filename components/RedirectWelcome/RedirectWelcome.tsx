@@ -13,6 +13,7 @@ import { desiredTokensByChainRev, chainNameToIdMap } from "../../utils/utils";
 import type { StaticImageData } from "next/image";
 import { getTxId } from "../../frontend-services/graphServices";
 import hero from "../../public/hero.png";
+import { formatAddress } from "../../utils/helpers";
 
 type txData = {
   toAddress?: string;
@@ -38,6 +39,7 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
   const { chain } = useNetwork();
   const [fetchedTokens, setFetchedTokens] = useState<Coin[]>([]);
   const [sendConnext] = useConnext();
+  const [transferId, setTransferId] = useState<string | null>("0x53d74aee258bd3107a48a7b609596a65bd7ddc0f2c30cec7836a7fe2e7912856");
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);
@@ -70,7 +72,6 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
     };
     fetchTx();
   }, [txId]);
-  console.log("TXDATA", txData);
   useEffect(() => {
     if (address) {
       fetch("/api/userDetails/getTokensForAddress", {
@@ -96,11 +97,12 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
   useEffect(() => {
     const fetchTxData = async () => {
       try {
-        if (trxHash && txData?.destination&&chain) {
+        if (trxHash && txData?.destination && chain) {
           const Connexthash = await getTxId(trxHash, chain?.id);
           console.log(Connexthash);
           if (Connexthash) {
             console.log("Received hash:", Connexthash);
+            setTransferId(Connexthash);
           } else {
             console.error("No hash received from getTxId");
           }
@@ -225,7 +227,38 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
                       />
                     </motion.div>
                   </>
-                ) : confirmedCoin ? (
+                ) : !confirmedCoin ? (
+                  <>
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideRight}
+                    >
+                      <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
+                        Connect Your Wallet To Get Started..
+                      </p>
+                      <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
+                        Let&apos;s Set You Up!
+                      </p>
+                    </motion.div>
+                    <motion.div
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={slideUp}
+                    >
+                      <div className="flex items-center space-x-6 mt-10 w-full ">
+                        <button
+                          onClick={openConnectModal}
+                          className="px-10 w-full  border-2 bg-slate-200 rounded-lg p-2"
+                        >
+                          Connect Wallet
+                        </button>
+                      </div>
+                    </motion.div>
+                  </>
+                ) : !transferId ? (
                   <>
                     <motion.div
                       initial="hidden"
@@ -278,35 +311,38 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
                   </>
                 ) : (
                   <>
-                    <motion.div
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      variants={slideRight}
-                    >
-                      <p className="max-w-xl mt-4 font-thin tracking-tight text-gray-600 text-2xl">
-                        Connect Your Wallet To Get Started..
-                      </p>
-                      <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl ">
-                        Let&apos;s Set You Up!
-                      </p>
-                    </motion.div>
-                    <motion.div
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      variants={slideUp}
-                    >
-                      <div className="flex items-center space-x-6 mt-10 w-full ">
-                        <button
-                          onClick={openConnectModal}
-                          className="px-10 w-full  border-2 bg-slate-200 rounded-lg p-2"
-                        >
-                          Connect Wallet
-                        </button>
-                      </div>
-                    </motion.div>
-                  </>
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={slideRight}
+                  >
+                    <p className="text-2xl font-black tracking-tight text-black sm:text-4xl lg:text-8xl">
+                      Done!
+                    </p>
+                    
+                  </motion.div>
+
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={slideUp}
+                  >
+                    {" "}
+                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg px-6 py-6">
+                    <p className="mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                      Here is your Transaction on Connext
+                    </p>
+                    <p className="text-lg text-gray-700 leading-relaxed">{formatAddress(transferId,10,10)}</p>
+                    <p className="mt-4 font-thin tracking-tight text-gray-600 text-2xl mb-10">
+                      Click below to see check your transaction on Connext Explorer
+                    </p>
+                    <a className="underline text-blue-800 hover:text-blue-600" href={"https://testnet.connextscan.io/tx/"+transferId}>Go To Connext</a>
+                    </div>
+                    
+                  </motion.div>
+                </>
                 )}
               </div>
             </div>

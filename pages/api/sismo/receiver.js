@@ -37,7 +37,7 @@ export default async function handler(request, response) {
     }catch(err){
         return response.status(401).json({message:"Bad Request"})
     }
-    const client = clientPromise();
+    const client = await clientPromise;
     const db = client.db("PayDB")
     await db.collection("Users").updateOne({address:userAddress},{$set:{membership:true}},(err,res)=>{
       if(err)throw err

@@ -7,7 +7,7 @@ export const getTxId =async (txHash:string,chainId:number)=>{
     let query = `query OriginTransfer {
       originTransfers(
         where: {
-          transactionHash: "0x658bd6a648967d8dc255800d07a64167796640389daa1980e55d44eee52348d3"
+          transactionHash: "${txHash}"
         }
       ) {
           transferId

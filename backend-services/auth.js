@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 
 export const getToken = (payload) => {
-  const token = jwt.sign(payload, process.env.JWT_KEY,{expiresIn:30*30});
+  console.log("PAYLOAD",payload)
+  const token = jwt.sign(payload, process.env.JWT_KEY);
   return token;
 };
 
@@ -26,6 +27,5 @@ export const getAuthToken = function (request) {
     return false;
   }
   const token = header.substring(7);
-  console.log("token: ", token);
   return token;
 };

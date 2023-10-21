@@ -14,29 +14,25 @@ export default async function handler(request, response) {
     console.log(message, address, signature);
     let SIWEObject = new SiweMessage(message);
     var query = { address: address };
-
-    console.log("Address", address);
+    var abc;
     let nonce;
-    let tx = await db
-      .collection("Users")
-      .find(query)
-      .toArray((err, res) => {
-        if (err) throw err;
-        else {
-          console.log("Result", res);
-          nonce = res.nonce;
-        }
-      });
-
-    const fields = await SIWEObject.verify({
-      signature: signature,
-      nonce: nonce,
-    });
-
-    db.collection("Users").updateOne(query, newvalues, (err, res) => {
+    await db.collection("Users").findOne(query, async (err, res) => {
       if (err) throw err;
+
+      nonce = res.nonce;
+      abc = res._id;
+      var fields = await SIWEObject.verify({
+        signature: signature,
+        nonce: nonce,
+      });
+      await db.collection("Users").updateOne(query, newvalues, (err, res) => {
+        if (err) throw err;
+        console.log("CHECK THIS", abc);
+        fields.data._id = abc;
+        const token = getToken(fields);
+        return response.status(200).json({ data: fields, token: token });
+      });
     });
-    const token = getToken(fields);
-    return response.status(200).json({ data: fields, token: token });
+    return response;
   } else return response.status(403).json({ message: "Forbidden Request" });
 }
