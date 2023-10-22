@@ -27,6 +27,7 @@ const SellerDashBoard: NextPage = () => {
   const [deployedContracts, setDeployedContracts] = useState<Deployements[]>(
     []
   );
+  const [depFetch,setDepFetch]=useState(false);
   const { data: client } = useWalletClient();
   const { userPPP, setUserPPP } = useContext(PushContext);
   const handleSwitchToSellerDashboard = () => {
@@ -113,6 +114,7 @@ const SellerDashBoard: NextPage = () => {
       } else if (res.status === 200) {
         const data = await res.json();
         console.log("GGEE", data);
+        setDepFetch(true)
         setDeployedContracts(data.deployements); // Assuming the API returns an object with a contracts key
       } else {
       }
@@ -156,7 +158,7 @@ const SellerDashBoard: NextPage = () => {
         />
       )}
 
-      {hasFetchedTransactions && transactions.length > 0 && (
+      {(deployedContracts?.length>0||transactions.length>0) && (
         <div>
           <Coins mode="earned" />
           <DataTable

@@ -1,16 +1,16 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
+import { desiredTokensByChain } from "../../utils/utils";
 interface Coin {
   name: string;
   symbol: string;
-  address: string|`0x${string}`;
-
+  address: string | `0x${string}`;
 }
 
 interface CoinTableProps {
   coins: Coin[];
   selectedCoin: string | null;
   confirmedCoin: string | null;
+  selectedChain: string | null;
   setSelectedCoin: (coin: string | null) => void;
   handleConfirmCoin: () => void;
 }
@@ -18,10 +18,17 @@ interface CoinTableProps {
 const CoinTableUser: React.FC<CoinTableProps> = ({
   coins,
   selectedCoin,
+  selectedChain,
   confirmedCoin,
   setSelectedCoin,
   handleConfirmCoin,
 }) => {
+  const [symbol, setSymbol] = useState<string | null>(null);
+  useEffect(() => {
+    if (selectedChain && selectedCoin)
+      setSymbol(desiredTokensByChain[selectedChain][selectedCoin]);
+  }, [selectedCoin]);
+  console.log("HERE", symbol);
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -37,18 +44,21 @@ const CoinTableUser: React.FC<CoinTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {coins.map((token) => (
-              <tr
-                key={token.name}
-                className={`border-b ${
-                  selectedCoin === token.name ? "bg-blue-100" : "bg-white"
-                }`}
-                onClick={() => setSelectedCoin(token.address)}
-              >
-                <td className="px-6 py-4">{token.symbol}</td>
-                <td className="px-6 py-4">{token.name}</td>
-              </tr>
-            ))}
+            {coins.map((token) => {
+              console.log("ABC", token.name);
+              return (
+                <tr
+                  key={token.symbol}
+                  className={`border-b ${
+                    symbol === token.name ? "bg-blue-100" : "bg-white"
+                  }`}
+                  onClick={() => setSelectedCoin(token.address)}
+                >
+                  <td className="px-6 py-4">{token.symbol}</td>
+                  <td className="px-6 py-4">{token.name}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
