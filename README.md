@@ -1,29 +1,58 @@
-This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Next.js](https://nextjs.org/) project bootstrapped with [`create-rainbowkit`](https://github.com/rainbow-me/rainbowkit/tree/main/packages/create-rainbowkit).
+# Way2Pay: E-Commerce Cryptocurrency Gateway
+Way2Pay revolutionizes e-commerce by integrating a non-custodial, multi-chain cryptocurrency payment system. By leveraging cross-chain protocols and advanced blockchain security, Way2Pay presents a user-friendly and customizable payment platform.
 
+## Key Features
+
+- **Non-Custodial Payments**: Users maintain control over their private keys and funds across multiple blockchains.
+- **Multi-Chain Support**: Accept payments in various cryptocurrencies, regardless of the underlying blockchain.
+- **Seamless E-Commerce Integration**: Easy setup for online businesses, enabling cryptocurrency as a payment option for customers.
+- **Real-Time Notifications and Chat**: Stay updated and engage in direct post-transaction communication via the Push Protocol.
+- **Advanced Security**: Transactions are secured and verified using Zero-Knowledge proofs with Sismo Privacy Connect.
+
+### Prerequisites
+
+- Node.js v14+
+- npm or Yarn
+- 
 ## Getting Started
 
-First, run the development server:
+Install Dependencies
+
+```bash
+npm install
+```
+
+run the development server:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Configure Environment Variables
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Rename .env.example to .env.local and update the variables accordingly.
 
-## Learn More
 
-To learn more about this stack, take a look at the following resources:
+## How it Works
 
-- [RainbowKit Documentation](https://rainbowkit.com) - Learn how to customize your wallet connection flow.
-- [wagmi Documentation](https://wagmi.sh) - Learn how to interact with Ethereum.
-- [Next.js Documentation](https://nextjs.org/docs) - Learn how to build a Next.js application.
+**Sellers**: 
+- After integrating with our platform, sellers can now easily accept cross-chain payments in a few simple steps.
 
-You can check out [the RainbowKit GitHub repository](https://github.com/rainbow-me/rainbowkit) - your feedback and contributions are welcome!
+**Connext**: 
+- Enables quick and secure cross-chain transactions, widening the scope of possible payments for sellers.
 
-## Deploy on Vercel
+**Uniswap**: 
+- For sellers or buyers who wish to swap tokens, our integration with Uniswap ensures a fluid experience.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Sismo ZK Proof**: 
+- Every transaction is verified with a zero-knowledge proof, ensuring security and preventing fraudulent transactions.
 
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+**Push Protocol**: 
+- Enhance your user experience with real-time chats and notifications about their transactions.
+
+**The Graph**: 
+- Get a birds-eye view of all cross-chain transactions, improving transparency and trust.
+
+## Support
+
+Facing issues? Reach out to us through the GitHub issues section or our dedicated support channels.
