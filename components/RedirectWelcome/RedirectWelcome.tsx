@@ -39,7 +39,7 @@ const RedirectWelcome = ({ txId, hero }: RedirectProps) => {
   const { chain } = useNetwork();
   const [fetchedTokens, setFetchedTokens] = useState<Coin[]>([]);
   const [sendConnext] = useConnext();
-  const [transferId, setTransferId] = useState<string | null>("0x53d74aee258bd3107a48a7b609596a65bd7ddc0f2c30cec7836a7fe2e7912856");
+  const [transferId, setTransferId] = useState<string | null>(null);
   const { openConnectModal } = useConnectModal();
   const { address, isConnecting, isDisconnected } = useAccount();
   const [confirmedChain, setConfirmedChain] = useState<string | null>(null);

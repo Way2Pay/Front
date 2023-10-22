@@ -17,7 +17,9 @@ import { getContractAddress } from "viem";
 import Navbar from "../HomePage/Navbar";
 import { useRouter } from "next/router";
 import { desiredTokensByChain, tokenSymbolToName } from "../../utils/utils";
+import { useToast } from "@chakra-ui/react";
 const DeployWelcome: NextPage = () => {
+  const toast = useToast();
   const { switchNetwork } = useSwitchNetwork();
 
   const router = useRouter();
@@ -127,13 +129,22 @@ const DeployWelcome: NextPage = () => {
   const { data: client, isError, isLoading } = useWalletClient();
   const [fetchedTokens, setFetchedTokens] = useState<Coin[]>();
 
-  async function deployContract() {
+  const deployContract = async () => {
     let abiData = require("../../destabi.json");
 
     console.log(client);
     const gasLimit = BigInt("2000000");
     const factory = new ContractFactory(abiData["abi"], abiData["bytecode"]);
     try {
+      toast({
+        position:"top-right",
+        title:"Deploying your Contract",
+        description:"Your transaction has been submitted",
+        status:"loading",
+        isClosable:true,
+        duration:5000,
+
+      })
       const a = await client?.deployContract({
         abi: abiData["abi"],
         account: address,
@@ -141,9 +152,20 @@ const DeployWelcome: NextPage = () => {
         args: [confirmedCoin, "0xE592427A0AEce92De3Edee1F18E0157C05861564"],
         gas: gasLimit,
       });
-      if (!a) return;
+      if (!a){ 
+        return;
+      }
+
       const receipt = await publicClient.waitForTransactionReceipt({ hash: a });
       console.log("RECEIPT", receipt);
+      toast({
+        position:'top-right',
+        title: 'Contract Deployed',
+        description: "Your contract is deployed. We'll update it in your profile",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
       if (!address) return;
       const nonce = await publicClient.getTransactionCount({
         address: address,
@@ -155,6 +177,7 @@ const DeployWelcome: NextPage = () => {
       });
 
       console.log("Address", contractAddress);
+      
       const request = await fetch(process.env.NEXT_PUBLIC_API_URL + "/deploy", {
         method: "POST",
         headers: {
@@ -168,8 +191,16 @@ const DeployWelcome: NextPage = () => {
         }),
       });
       console.log(await request.json());
+      toast({
+        position:'top-right',
+        title: 'Profile Updated',
+        description: "Your contract is stored in your profile",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
     } catch (err: unknown) {}
-  }
+  };
   const { heading, subheading } = getHeadingText();
 
   return (
@@ -232,6 +263,7 @@ const DeployWelcome: NextPage = () => {
                         >
                           <CoinTable
                             coins={fetchedTokens}
+                            selectedChain={confirmedChain}
                             selectedCoin={selectedCoin}
                             confirmedCoin={confirmedCoin}
                             setSelectedCoin={setSelectedCoin}

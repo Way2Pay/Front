@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.1",
     "@connext/chain-abstraction": "^1.0.4",
     "@connext/sdk": "^2.1.2",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@pushprotocol/restapi": "^1.4.24",
     "@pushprotocol/socket": "^0.5.2",
     "@rainbow-me/rainbowkit": "^1.1.1",

@@ -29,7 +29,8 @@ const CoinTable: React.FC<CoinTableProps> = ({
     }
     return acc;
   }, {});
-
+  
+  console.log("SELECTIONS",selectedChain,selectedCoin)
   return (
     <>
       {Object.entries(groupedCoins).map(([chain, chainCoins]) => (
@@ -52,11 +53,12 @@ const CoinTable: React.FC<CoinTableProps> = ({
               </thead>
               <tbody>
                 {chainCoins.map((token) => {
+                  console.log("TOKEN",token.name,chain)
                   return (
                     <tr
                       key={token.name}
                       className={`border-b ${
-                        selectedCoin === token.name && chain === selectedChain
+                        selectedCoin === token.symbol && chain === selectedChain
                           ? "bg-blue-100"
                           : "bg-white"
                       }`}

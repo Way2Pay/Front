@@ -7,8 +7,9 @@ import { chainIdToRPC, domainToChainID, chainToDomainId } from "../utils/utils";
 import { SdkBase, SdkConfig, create } from "@connext/sdk";
 import "../destabi.json";
 import { WalletClient, parseEther } from "viem";
-
+import { useToast } from "@chakra-ui/react";
 export const useConnext = () => {
+  const toast = useToast();
   const [sdkBase, setSDKBase] = useState<SdkBase>();
   const [auth, setAuth] = useRecoilState(authState);
   const { chain } = useNetwork();
@@ -51,7 +52,6 @@ export const useConnext = () => {
             },
           },
         };
-        console.log("FLAG 1");
         const { sdkBase: data, sdkUtils: data2 } = await create(sdkConfig);
         setSDKBase(data);
       }
@@ -67,7 +67,13 @@ export const useConnext = () => {
     toAddress: string,
     amount: number
   ) {
-    console.log("FLAG2", token);
+    toast({
+      title: "Initiated",
+      description: "Fetching parameters for transaction",
+      status: "loading",
+      duration: 4000,
+      position: "top-right",
+    });
     let abiData = require("../destabi.json");
     const poolFee = 3000;
 
@@ -108,37 +114,67 @@ export const useConnext = () => {
       parseEther(amount.toString()).toString()
     );
 
-    function walletClientToSigner(walletClient: WalletClient) {
-      const { account, chain, transport } = walletClient;
-      if (!chain) {
-        return null;
-      }
-      const network = {
-        chainId: chain.id,
-        name: chain.name,
-        ensAddress: chain.contracts?.ensRegistry?.address,
-      };
-
-      const provider = new ethers.providers.Web3Provider(transport, network);
-      const signer = provider.getSigner(account?.address);
-      return signer;
-    }
-
     const signer = client ? walletClientToSigner(client) : null;
 
     if (approveTxReq) {
+      toast({
+        title:"Approval Needed",
+        description:"Please approve the connext contract to spend your tokens",
+        status:"warning",
+        duration:3000,
+        position:"top-right"
+        
+      })
       const approveTxReceipt = await signer?.sendTransaction(approveTxReq);
+      
       await approveTxReceipt?.wait();
     }
-
+    toast({
+      title:"Approved",
+      description:"Token Approved! Fetching Transaction parameters",
+      status:"success",
+      duration:3000,
+      position:"top-right"
+      
+    })
     const xcallTxReq = await sdkBase?.xcall(xcallParams)!;
     console.log(xcallTxReq);
     xcallTxReq.gasLimit = BigNumber.from("400000");
     const xcallTxReceipt = await signer?.sendTransaction(xcallTxReq);
+    toast({
+      title:"Transaction Sent",
+      description:"Your transaction has been submitted ",
+      status:"success",
+      duration:4000,
+      position:"top-right"
+      
+    })
     console.log(xcallTxReceipt);
     await xcallTxReceipt?.wait();
+    toast({
+      title:"Transaction Successful",
+      description:"Your transaction is registed on chain!",
+      status:"loading",
+      duration:3000,
+      position:"top-right"
+      
+    })
     return xcallTxReceipt?.hash;
   }
+  function walletClientToSigner(walletClient: WalletClient) {
+    const { account, chain, transport } = walletClient;
+    if (!chain) {
+      return null;
+    }
+    const network = {
+      chainId: chain.id,
+      name: chain.name,
+      ensAddress: chain.contracts?.ensRegistry?.address,
+    };
 
+    const provider = new ethers.providers.Web3Provider(transport, network);
+    const signer = provider.getSigner(account?.address);
+    return signer;
+  }
   return [sendConnext];
 };

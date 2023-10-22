@@ -25,7 +25,7 @@ import {
 } from "recoil";
 import { publicProvider } from "wagmi/providers/public";
 import { createContext, useContext, useState } from "react";
-
+import {ChakraProvider} from "@chakra-ui/react"
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
     mainnet,
@@ -64,10 +64,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
+        <ChakraProvider>
         <RecoilRoot>
           <PushContext.Provider value={{userPPP,setUserPPP}}>
           <Component {...pageProps} /></PushContext.Provider>
-        </RecoilRoot>
+        </RecoilRoot></ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );
